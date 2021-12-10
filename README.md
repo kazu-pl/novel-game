@@ -1,20 +1,24 @@
-# TypeScript & Styled Components Next.js example
+# How I actually installed this template:
+
+I had node v12.x.x and I had to update it to 14.18.2 because some packages required 14.5.x or higher but lower than 15.x.x
+
+### TypeScript & Styled Components Next.js example
 
 This is a really simple project that show the usage of Next.js with TypeScript and Styled Components.
 
-## Preview
+#### Preview
 
 Preview the example live on [StackBlitz](http://stackblitz.com/):
 
 [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/vercel/next.js/tree/canary/examples/with-typescript-styled-components)
 
-## Deploy your own
+#### Deploy your own
 
 Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example):
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/vercel/next.js/tree/canary/examples/with-typescript-styled-components&project-name=with-typescript-styled-components&repository-name=with-typescript-styled-components)
 
-## How to use it?
+#### How to use it?
 
 Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init) or [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/) to bootstrap the example:
 
@@ -26,7 +30,7 @@ yarn create next-app --example with-typescript-styled-components with-typescript
 
 Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
 
-## Notes
+#### Notes
 
 This is an amalgamation of the 2 existing examples:
 
