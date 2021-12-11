@@ -2,6 +2,7 @@
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
+  // Allows to use SVG as ReactComponent
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,
