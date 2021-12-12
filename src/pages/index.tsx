@@ -1,70 +1,74 @@
-import styled from "styled-components";
-
 import type { NextPage } from "next";
 import Head from "next/head";
+import Button from "antd/lib/button";
+import CoreView from "layouts/CoreView";
+import { useForm } from "react-hook-form";
+import InputReactHookForm from "components/reactHookForm/InputReactHookForm";
+import { yupResolver } from "@hookform/resolvers/yup/dist/yup";
+import yup from "common/yup";
+import Box from "components/Box";
 
-import Counter from "../features/counter/Counter";
-const styles: any = {};
+const SignupSchema = yup.object({
+  email: yup.string().email().required(),
+  password: yup.string().required(),
+});
 
-const Title = styled.h1`
-  color: red;
-  font-size: 50px;
-`;
+interface FormValues {
+  email: string;
+  password: string;
+}
 
 const IndexPage: NextPage = () => {
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<FormValues>({
+    mode: "all",
+    resolver: yupResolver(SignupSchema),
+  });
+
+  const onSubmit = (values: FormValues) => {
+    console.log({ values });
+  };
+
   return (
-    <div className={styles.container}>
+    <>
       <Head>
-        <title>Redux Toolkit</title>
-        <link rel="icon" href="/favicon.ico" />
+        <title>Logowanie</title>
       </Head>
-      <header className={styles.header}>
-        <img src="/logo.png" className={styles.logo} alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <Title>THIS IS STYLED TITLE</Title>
-          <span>Learn </span>
-          <a
-            className={styles.link}
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className={styles.link}
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className={styles.link}
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className={styles.link}
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
+
+      <CoreView title="Logowanie">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Box marginBottom={15}>
+            <InputReactHookForm
+              name="email"
+              control={control}
+              placeholder="e-mail"
+              error={errors.email}
+              label="Wprowadź email"
+            />
+          </Box>
+
+          <Box marginBottom={15}>
+            <InputReactHookForm
+              name="password"
+              control={control}
+              placeholder="password"
+              error={errors.password}
+              type="password"
+              label="Wprowadź hasło"
+            />
+          </Box>
+
+          <Box display="flex" justifyContent="flex-end">
+            <Button htmlType="submit" type="primary">
+              Zaloguj się
+            </Button>
+          </Box>
+        </form>
+      </CoreView>
+    </>
   );
 };
 

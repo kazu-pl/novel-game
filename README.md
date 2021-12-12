@@ -1,3 +1,33 @@
+# How to use yup and yupResolver with react-hook-form in Next.js v12 or later:
+
+If you have error like this:
+
+```
+Server Error
+
+SyntaxError: Named export 'set' not found. The requested module 'react-hook-form' is a CommonJS module, which may not support all module.exports as named exports.
+CommonJS modules can always be imported via the default export, for example using:
+
+import pkg from 'react-hook-form';
+const {get: r,set: e}from"react-hook-form";var i=function(e,i){for(var a in i.fields){var f=i.fields[a];if(f&&f.ref&&"reportValidity"in f.ref){var t=r(e,a);f.ref.setCustomValidity(t&&t.message||""),f.ref.reportValidity()}}},a=function(a,f){f.shouldUseNativeValidation&&i(a,f);var t={};for(var o in a){var s=r(f.fields,o);e(t,o,Object.assign(a[o],{ref:s&&s.ref}))}return t};export{a: toNestError,i: validateFieldsNatively} = pkg;
+This error happened while generating the page. Any console logs will be displayed in the terminal window.
+
+```
+
+then it means that you're importing `yup` like this:
+
+```
+import { yupResolver } from '@hookform/resolvers/yup';
+```
+
+but YOU SHOULD IMPORT IT LIKE THIS:
+
+```
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+```
+
+Solution found [here](https://stackoverflow.com/questions/69792558/react-hook-form-build-problem-when-upgrading-nextjs-to-version-12)
+
 # How I actually installed this template:
 
 I had node v12.x.x and I had to update it to 14.18.2 because some packages required 14.5.x or higher but lower than 15.x.x
