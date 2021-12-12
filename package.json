@@ -11,6 +11,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.7.0",
     "@hookform/resolvers": "^2.8.4",
     "@reduxjs/toolkit": "^1.6.2",
     "antd": "^4.17.3",
