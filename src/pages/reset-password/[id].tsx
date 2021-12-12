@@ -8,6 +8,10 @@ import yup from "common/yup";
 import Box from "components/Box";
 import { RequestRenewPassword } from "types/novel-server.types";
 import HeadDecorator from "components/HeadDecorator";
+import { resetUserPassword } from "core/store/userSlice";
+import { useAppDispatch } from "common/store/hooks";
+import { useRouter } from "next/router";
+import { PATHS_CORE } from "common/constants/paths";
 
 const validationSchema = yup.object({
   password: yup.string().required(),
@@ -18,17 +22,24 @@ const validationSchema = yup.object({
 });
 
 const ResetPasswordPage: NextPage = () => {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
   const {
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<RequestRenewPassword>({
     mode: "all",
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit = (values: RequestRenewPassword) => {
-    console.log({ values });
+  const onSubmit = async (values: RequestRenewPassword) => {
+    try {
+      const response = await dispatch(
+        resetUserPassword({ ...values, userId: router.query.id as string })
+      );
+      router.push(PATHS_CORE.LOGIN);
+    } catch (error) {}
   };
 
   return (
@@ -58,7 +69,7 @@ const ResetPasswordPage: NextPage = () => {
           </Box>
 
           <Box display="flex" justifyContent="flex-end">
-            <Button htmlType="submit" type="primary">
+            <Button htmlType="submit" type="primary" loading={isSubmitting}>
               Ustaw hasło
             </Button>
           </Box>

@@ -7,9 +7,12 @@ import { yupResolver } from "@hookform/resolvers/yup/dist/yup";
 import yup from "common/yup";
 import Box from "components/Box";
 import Link from "next/link";
-import { PATHS_CORE } from "common/constants/paths";
+import { PATHS_CORE, PATHS_DASHBOARD } from "common/constants/paths";
 import { RequestLoginCredentials } from "types/novel-server.types";
 import HeadDecorator from "components/HeadDecorator";
+import { useAppDispatch } from "common/store/hooks";
+import { login } from "core/store/userSlice";
+import { useRouter } from "next/router";
 
 const validationSchema = yup.object({
   email: yup.string().email().required(),
@@ -17,17 +20,27 @@ const validationSchema = yup.object({
 });
 
 const IndexPage: NextPage = () => {
+  const dispatch = useAppDispatch();
+
+  const router = useRouter();
   const {
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<RequestLoginCredentials>({
     mode: "all",
+
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit = (values: RequestLoginCredentials) => {
-    console.log({ values });
+  const onSubmit = async (values: RequestLoginCredentials) => {
+    try {
+      await dispatch(login(values));
+
+      router.push(PATHS_DASHBOARD.DASHBOARD);
+    } catch (error) {
+      alert(error);
+    }
   };
 
   return (
@@ -58,7 +71,7 @@ const IndexPage: NextPage = () => {
           </Box>
 
           <Box display="flex" justifyContent="flex-end">
-            <Button htmlType="submit" type="primary">
+            <Button htmlType="submit" type="primary" loading={isSubmitting}>
               Zaloguj się
             </Button>
           </Box>
