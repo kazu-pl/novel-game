@@ -1,14 +1,43 @@
-import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
+import {
+  configureStore,
+  ThunkAction,
+  Action,
+  combineReducers,
+  AnyAction,
+} from "@reduxjs/toolkit";
+import { Middleware } from "@reduxjs/toolkit";
 
+import userSlice from "core/store/userSlice";
 import counterReducer from "../../features/counter/counterSlice";
 
-export function makeStore() {
-  return configureStore({
-    reducer: { counter: counterReducer },
-  });
-}
+export const throwMiddleware: Middleware = () => (next) => (action) => {
+  next(action);
+  if (action?.error) {
+    throw action.payload;
+  }
+};
 
-const store = makeStore();
+const combinedReducer = combineReducers({
+  user: userSlice,
+  counter: counterReducer,
+});
+
+export type RootState = ReturnType<typeof combinedReducer>;
+
+const rootReducer = (rootState: RootState | undefined, action: AnyAction) => {
+  if (action.type === "/logout") {
+    if (rootState) {
+      rootState = undefined;
+    }
+  }
+  return combinedReducer(rootState, action);
+};
+
+export const store = configureStore({
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(throwMiddleware),
+});
 
 export type AppState = ReturnType<typeof store.getState>;
 

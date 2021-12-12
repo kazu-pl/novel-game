@@ -9,25 +9,37 @@ import yup from "common/yup";
 import { Button } from "antd";
 import InputReactHookForm from "components/reactHookForm/InputReactHookForm";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import { RequestRemindPasswordCredentials } from "types/novel-server.types";
+import {
+  RequestRemindPasswordCredentials,
+  SuccessfulReqMsg,
+} from "types/novel-server.types";
 import HeadDecorator from "components/HeadDecorator";
+import { sendEmailToRemindPassword } from "core/store/userSlice";
+import { useAppDispatch } from "common/store/hooks";
 
 const validationSchema = yup.object({
   email: yup.string().email().required(),
 });
 
 const ForgotPassword: NextPage = () => {
+  const dispatch = useAppDispatch();
   const {
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<RequestRemindPasswordCredentials>({
     mode: "all",
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit = (values: RequestRemindPasswordCredentials) => {
-    console.log({ values });
+  const onSubmit = async (values: RequestRemindPasswordCredentials) => {
+    try {
+      const response = await dispatch(sendEmailToRemindPassword(values));
+      const payload = response.payload as SuccessfulReqMsg;
+      alert(payload.message);
+    } catch (error) {
+      alert(error);
+    }
   };
   return (
     <>
@@ -51,7 +63,7 @@ const ForgotPassword: NextPage = () => {
           </Box>
 
           <Box display="flex" justifyContent="flex-end">
-            <Button htmlType="submit" type="primary">
+            <Button htmlType="submit" type="primary" loading={isSubmitting}>
               Wyślij link
             </Button>
           </Box>

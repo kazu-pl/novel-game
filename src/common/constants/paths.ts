@@ -9,3 +9,7 @@ export const PATHS_CORE = {
   PASSWORD_FORGOT: "/forgot-password",
   PASSWORD_RESET: "/reset-password/:userId",
 };
+
+export const PATHS_DASHBOARD = {
+  DASHBOARD: "/dashboard",
+};
