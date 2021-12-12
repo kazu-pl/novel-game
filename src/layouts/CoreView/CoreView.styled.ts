@@ -23,7 +23,3 @@ export const StyledContentWrapper = styled.div`
   background-color: white;
   text-align: center;
 `;
-
-export const StyledSectionWrapper = styled.div`
-  padding-bottom: 16px;
-`;

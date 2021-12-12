@@ -6,67 +6,61 @@ import InputReactHookForm from "components/reactHookForm/InputReactHookForm";
 import { yupResolver } from "@hookform/resolvers/yup/dist/yup";
 import yup from "common/yup";
 import Box from "components/Box";
-import Link from "next/link";
-import { PATHS_CORE } from "common/constants/paths";
-import { RequestLoginCredentials } from "types/novel-server.types";
+import { RequestRenewPassword } from "types/novel-server.types";
 import HeadDecorator from "components/HeadDecorator";
 
 const validationSchema = yup.object({
-  email: yup.string().email().required(),
   password: yup.string().required(),
+  repeatedPassword: yup
+    .string()
+    .oneOf([yup.ref("password")], "Rózne hasła")
+    .required(),
 });
 
-const IndexPage: NextPage = () => {
+const ResetPasswordPage: NextPage = () => {
   const {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<RequestLoginCredentials>({
+  } = useForm<RequestRenewPassword>({
     mode: "all",
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit = (values: RequestLoginCredentials) => {
+  const onSubmit = (values: RequestRenewPassword) => {
     console.log({ values });
   };
 
   return (
     <>
-      <HeadDecorator title="Logowanie" description="Strona logowania" />
+      <HeadDecorator title="Ustaw nowe hasło" description="Strona logowania" />
 
-      <CoreView title="Logowanie">
+      <CoreView title="Ustaw nowe hasło">
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Box marginBottom={15}>
-            <InputReactHookForm
-              name="email"
-              control={control}
-              placeholder="e-mail"
-              error={errors.email}
-              label="Wprowadź email"
-            />
-          </Box>
-
           <Box marginBottom={15}>
             <InputReactHookForm
               name="password"
               control={control}
-              placeholder="password"
               error={errors.password}
               type="password"
               label="Wprowadź hasło"
             />
           </Box>
 
-          <Box display="flex" justifyContent="flex-end">
-            <Button htmlType="submit" type="primary">
-              Zaloguj się
-            </Button>
+          <Box marginBottom={15}>
+            <InputReactHookForm
+              name="repeatedPassword"
+              control={control}
+              error={errors.repeatedPassword}
+              type="password"
+              label="Ponownie wprowadź hasło"
+            />
           </Box>
 
-          <Box display="flex" justifyContent="flex-end" marginTop={8}>
-            <Link href={PATHS_CORE.PASSWORD_FORGOT}>
-              <a>Zapomniałem hasła</a>
-            </Link>
+          <Box display="flex" justifyContent="flex-end">
+            <Button htmlType="submit" type="primary">
+              Ustaw hasło
+            </Button>
           </Box>
         </form>
       </CoreView>
@@ -74,4 +68,4 @@ const IndexPage: NextPage = () => {
   );
 };
 
-export default IndexPage;
+export default ResetPasswordPage;
