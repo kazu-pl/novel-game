@@ -16,7 +16,7 @@ export const StyledCorePageWrapper = styled.div`
 `;
 
 export const StyledContentWrapper = styled.div`
-  max-width: 300px;
+  max-width: 346px;
   width: 100%;
   padding: 16px;
   border-radius: 4px;
