@@ -5,12 +5,16 @@ import CreateGlobalStyle from "common/styles/globalStyles.styled";
 import "antd/dist/antd.css";
 
 import store from "../common/store/store";
+import theme from "common/styles/theme";
+import { ThemeProvider } from "styled-components";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <Provider store={store}>
       <CreateGlobalStyle />
-      <Component {...pageProps} />
+      <ThemeProvider theme={theme}>
+        <Component {...pageProps} />
+      </ThemeProvider>
     </Provider>
   );
 }
