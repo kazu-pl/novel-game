@@ -29,7 +29,6 @@ const IndexPage: NextPage = () => {
     formState: { errors, isSubmitting },
   } = useForm<RequestLoginCredentials>({
     mode: "all",
-
     resolver: yupResolver(validationSchema),
   });
 
