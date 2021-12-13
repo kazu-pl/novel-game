@@ -54,7 +54,7 @@ const DashboardLayout = ({
           className="pageHeader"
         />
       </Affix>
-      <Box display="flex">
+      <Box display="flex" flexGrow={1}>
         <StyledSidebarWrapper width={256}>
           <Sidebar width={256} items={sidebarItems} />
         </StyledSidebarWrapper>

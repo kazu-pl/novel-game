@@ -1,6 +1,10 @@
 import styled from "styled-components";
 
 export const StyledDashboardWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
   .pageHeader {
     background-color: white;
     border: 1px solid rgb(235, 237, 240);
