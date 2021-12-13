@@ -27,7 +27,7 @@ export const login = createAsyncThunk(
   "login",
   async (values: RequestLoginCredentials, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post<Tokens>("/cms/login", values);
+      const response = await axiosInstance.post<Tokens>("/login", values);
       saveTokens(response.data);
       return response.data;
     } catch (error) {
@@ -39,7 +39,7 @@ export const login = createAsyncThunk(
 export const refreshAccessToken = async (): Promise<AccessToken> => {
   const tokens = getTokens();
 
-  const response = await axiosInstance.post<AccessToken>("/cms/refresh-token", {
+  const response = await axiosInstance.post<AccessToken>("/refresh-token", {
     refreshToken: tokens!.refreshToken,
   });
   saveTokens({
@@ -55,7 +55,7 @@ export const logout = createAsyncThunk(
     const tokens = getTokens();
     try {
       removeTokens(); // you have to remove tokens before request, removing after awaiting for response will run iunto infinite loop of redirecting between dashboard and login
-      const response = await axiosInstance.post("/cms/logout", tokens);
+      const response = await axiosInstance.post("/logout", tokens);
       return response.data;
     } catch (error) {
       removeTokens();
