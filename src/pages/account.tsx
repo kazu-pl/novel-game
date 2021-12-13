@@ -9,6 +9,7 @@ import {
   fetchUserData,
   selectUserProfile,
   updateUserAvatar,
+  updateUserData,
 } from "core/store/userSlice";
 import { useAppDispatch, useAppSelector } from "common/store/hooks";
 import { Upload, Button, message } from "antd";
@@ -16,8 +17,19 @@ import { UploadOutlined } from "@ant-design/icons";
 import { useRef, useState } from "react";
 
 import { API_URL } from "common/constants/env";
+import { yupResolver } from "@hookform/resolvers/yup/dist/yup";
+import { useForm } from "react-hook-form";
+import { FailedReqMsg, RequestUpdateUser } from "types/novel-server.types";
+import yup from "common/yup";
+import InputReactHookForm from "components/reactHookForm/InputReactHookForm";
 
 const { Paragraph } = Typography;
+
+const validationBasicDataSchema = yup.object({
+  email: yup.string().email().required(),
+  name: yup.string().required(),
+  surname: yup.string().required(),
+});
 
 const DashboardPage: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -61,14 +73,39 @@ const DashboardPage: NextPage = () => {
     }
   };
 
+  const {
+    handleSubmit: handleBasicDataSubmit,
+    control,
+    formState: { errors: basicDataErrors, isSubmitting: isBasicDataSubmitting },
+  } = useForm<RequestUpdateUser>({
+    mode: "all",
+    defaultValues: {
+      email: userData?.email || "",
+      name: userData?.name || "",
+      surname: userData?.surname || "",
+    },
+    resolver: yupResolver(validationBasicDataSchema),
+  });
+
+  const onBasicDataSubmit = async (values: RequestUpdateUser) => {
+    try {
+      await dispatch(updateUserData(values));
+      dispatch(fetchUserData());
+    } catch (error) {
+      const { message } = error as FailedReqMsg;
+      console.log(message);
+    }
+  };
+
   return (
     <>
       <HeadDecorator title="dashbaord" description="Strona dashbaordu" />
 
       <PrivateRoute>
         <DashboardWrapper title="Dashboard">
-          <Paragraph strong>Zmień Avatar</Paragraph>
           <Box paddingTop={16} paddingBottom={16} maxWidth={700}>
+            <Paragraph strong>Zmień Avatar</Paragraph>
+
             <Box marginBottom={16}>
               <Avatar
                 size={64}
@@ -106,6 +143,48 @@ const DashboardPage: NextPage = () => {
                 Usuń
               </Button>
             </Box>
+          </Box>
+
+          <Box paddingTop={16} paddingBottom={16} maxWidth={700}>
+            <Paragraph strong>Zmień dane konta</Paragraph>
+            <form onSubmit={handleBasicDataSubmit(onBasicDataSubmit)}>
+              <Box paddingTop={16}>
+                <InputReactHookForm
+                  name="email"
+                  control={control}
+                  placeholder="e-mail"
+                  error={basicDataErrors.email}
+                  label="Wprowadź email"
+                />
+              </Box>
+              <Box paddingTop={16}>
+                <InputReactHookForm
+                  name="name"
+                  control={control}
+                  placeholder="Imię"
+                  error={basicDataErrors.name}
+                  label="Wprowadź imię"
+                />
+              </Box>
+              <Box paddingTop={16}>
+                <InputReactHookForm
+                  name="surname"
+                  control={control}
+                  placeholder="Nazwisko"
+                  error={basicDataErrors.surname}
+                  label="Wprowadź nazwisko"
+                />
+              </Box>
+              <Box paddingTop={16} display="flex" justifyContent="flex-end">
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={isBasicDataSubmitting}
+                >
+                  Aktualizuj
+                </Button>
+              </Box>
+            </form>
           </Box>
         </DashboardWrapper>
       </PrivateRoute>
