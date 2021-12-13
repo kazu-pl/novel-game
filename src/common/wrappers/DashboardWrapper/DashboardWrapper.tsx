@@ -1,7 +1,7 @@
 import { Button } from "antd";
 import DashboardLayout, { DashboardLayoutProps } from "layouts/Dashboard";
-import { useAppDispatch } from "common/store/hooks";
-import { logout } from "core/store/userSlice";
+import { useAppDispatch, useAppSelector } from "common/store/hooks";
+import { logout, selectUserProfile } from "core/store/userSlice";
 import { useRouter } from "next/router";
 import {
   PATHS_CORE,
@@ -20,17 +20,15 @@ import {
 } from "@ant-design/icons";
 import Link from "next/link";
 import { Fragment } from "react";
+import { API_URL } from "common/constants/env";
 
 export interface DashboardWrapperProps
-  extends Pick<DashboardLayoutProps, "title" | "subTitle" | "children"> {}
+  extends Pick<DashboardLayoutProps, "title" | "children"> {}
 
-const DashboardWrapper = ({
-  title,
-  subTitle,
-  children,
-}: DashboardWrapperProps) => {
+const DashboardWrapper = ({ title, children }: DashboardWrapperProps) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const userProfileData = useAppSelector(selectUserProfile);
 
   const handleLogout = async () => {
     try {
@@ -45,7 +43,14 @@ const DashboardWrapper = ({
   return (
     <DashboardLayout
       title={title}
-      subTitle={subTitle}
+      subTitle={
+        userProfileData
+          ? `Witaj, ${userProfileData.name} ${userProfileData.surname}`
+          : ""
+      }
+      avatarUrl={
+        userProfileData?.avatar ? API_URL + userProfileData?.avatar : ""
+      }
       sidebarItems={[
         {
           variant: "no-dropdown",

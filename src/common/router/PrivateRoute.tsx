@@ -5,6 +5,7 @@ import { useLayoutEffect, useState } from "react";
 import { Spin } from "antd";
 import Box from "components/Box";
 import { refreshAccessToken } from "core/store/userSlice";
+import UserProfileWrapper from "common/wrappers/UserProfileWrapper";
 
 export interface PrivateRouteProps {
   children?: React.ReactNode;
@@ -64,7 +65,7 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
     );
   }
 
-  return <>{children}</>;
+  return <UserProfileWrapper>{children}</UserProfileWrapper>;
 };
 
 export default PrivateRoute;
