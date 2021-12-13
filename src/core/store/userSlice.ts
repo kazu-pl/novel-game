@@ -5,6 +5,7 @@ import {
   AccessToken,
   FailedReqMsg,
   RequestLoginCredentials,
+  RequestRegisterCredentials,
   RequestRemindPasswordCredentials,
   RequestRenewPassword,
   RequestUpdateUser,
@@ -29,6 +30,18 @@ export const login = createAsyncThunk(
     try {
       const response = await axiosInstance.post<Tokens>("/login", values);
       saveTokens(response.data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue((error as FailedReqMsg).message);
+    }
+  }
+);
+
+export const register = createAsyncThunk(
+  "register",
+  async (values: RequestRegisterCredentials, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post<Tokens>("/register", values);
       return response.data;
     } catch (error) {
       return rejectWithValue((error as FailedReqMsg).message);

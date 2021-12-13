@@ -76,7 +76,11 @@ const IndexPage: NextPage = () => {
             </Button>
           </Box>
 
-          <Box display="flex" justifyContent="flex-end" marginTop={8}>
+          <Box display="flex" justifyContent="space-between" marginTop={8}>
+            <Link href={PATHS_CORE.REGISTER}>
+              <a>Załóż konto</a>
+            </Link>
+
             <Link href={PATHS_CORE.PASSWORD_FORGOT}>
               <a>Zapomniałem hasła</a>
             </Link>
