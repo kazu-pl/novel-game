@@ -10,6 +10,7 @@ import {
   selectUserProfile,
   updateUserAvatar,
   updateUserData,
+  updateUserPassword,
 } from "core/store/userSlice";
 import { useAppDispatch, useAppSelector } from "common/store/hooks";
 import { Upload, Button, message } from "antd";
@@ -19,7 +20,11 @@ import { useRef, useState } from "react";
 import { API_URL } from "common/constants/env";
 import { yupResolver } from "@hookform/resolvers/yup/dist/yup";
 import { useForm } from "react-hook-form";
-import { FailedReqMsg, RequestUpdateUser } from "types/novel-server.types";
+import {
+  FailedReqMsg,
+  RequestRenewPassword,
+  RequestUpdateUser,
+} from "types/novel-server.types";
 import yup from "common/yup";
 import InputReactHookForm from "components/reactHookForm/InputReactHookForm";
 
@@ -29,6 +34,14 @@ const validationBasicDataSchema = yup.object({
   email: yup.string().email().required(),
   name: yup.string().required(),
   surname: yup.string().required(),
+});
+
+const validationPasswordSchema = yup.object({
+  password: yup.string().required(),
+  repeatedPassword: yup
+    .string()
+    .oneOf([yup.ref("password")], "Rózne hasła")
+    .required(),
 });
 
 const DashboardPage: NextPage = () => {
@@ -94,6 +107,28 @@ const DashboardPage: NextPage = () => {
     } catch (error) {
       const { message } = error as FailedReqMsg;
       console.log(message);
+    }
+  };
+
+  const {
+    handleSubmit: handlePassowrdSubmit,
+    control: passwordControll,
+    formState: { errors: passwordErrors, isSubmitting: isPasswordSubmitting },
+  } = useForm<RequestRenewPassword>({
+    mode: "all",
+    defaultValues: {
+      password: "",
+      repeatedPassword: "",
+    },
+    resolver: yupResolver(validationPasswordSchema),
+  });
+
+  const onPassowrdSubmit = async (values: RequestRenewPassword) => {
+    try {
+      await dispatch(updateUserPassword(values));
+      message.info("updated");
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -180,6 +215,41 @@ const DashboardPage: NextPage = () => {
                   type="primary"
                   htmlType="submit"
                   loading={isBasicDataSubmitting}
+                >
+                  Aktualizuj
+                </Button>
+              </Box>
+            </form>
+          </Box>
+
+          <Box paddingTop={16} paddingBottom={16} maxWidth={700}>
+            <Paragraph strong>Zmień hasło</Paragraph>
+            <form onSubmit={handlePassowrdSubmit(onPassowrdSubmit)}>
+              <Box paddingTop={16}>
+                <InputReactHookForm
+                  name="password"
+                  control={passwordControll}
+                  placeholder="hasło"
+                  type="password"
+                  error={passwordErrors.password}
+                  label="Wprowadź nowe hasło"
+                />
+              </Box>
+              <Box paddingTop={16}>
+                <InputReactHookForm
+                  name="repeatedPassword"
+                  control={passwordControll}
+                  placeholder="hasło"
+                  type="password"
+                  error={passwordErrors.repeatedPassword}
+                  label="Wprowadź ponownie hasło"
+                />
+              </Box>
+              <Box paddingTop={16} display="flex" justifyContent="flex-end">
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={isPasswordSubmitting}
                 >
                   Aktualizuj
                 </Button>
