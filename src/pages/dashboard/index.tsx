@@ -11,7 +11,7 @@ const DashboardPage: NextPage = () => {
 
       <PrivateRoute>
         <DashboardWrapper title="Dashboard">
-          <Box minHeight={"500vh"}>dashboard</Box>
+          <Box>Hello!</Box>
         </DashboardWrapper>
       </PrivateRoute>
     </>
