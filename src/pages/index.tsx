@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import Button from "antd/lib/button";
-import { notification } from "antd";
+import { notification, Spin } from "antd";
 import CoreView from "layouts/CoreView";
 import { useForm } from "react-hook-form";
 import InputReactHookForm from "components/reactHookForm/InputReactHookForm";
@@ -14,6 +14,8 @@ import HeadDecorator from "components/HeadDecorator";
 import { useAppDispatch } from "common/store/hooks";
 import { login } from "core/store/userSlice";
 import { useRouter } from "next/router";
+import { getTokens, isTokenExpired } from "common/auth/tokens";
+import { useLayoutEffect, useState } from "react";
 
 const validationSchema = yup.object({
   email: yup.string().email().required(),
@@ -22,8 +24,23 @@ const validationSchema = yup.object({
 
 const IndexPage: NextPage = () => {
   const dispatch = useAppDispatch();
-
   const router = useRouter();
+  const [isCheckingTokens, setIsCheckingTokens] = useState(true);
+
+  const tokens = getTokens();
+
+  useLayoutEffect(() => {
+    if (
+      tokens &&
+      !isTokenExpired(tokens.accessToken) &&
+      !isTokenExpired(tokens.refreshToken)
+    ) {
+      router.push(PATHS_DASHBOARD.DASHBOARD);
+    } else {
+      setIsCheckingTokens(false);
+    }
+  }, [setIsCheckingTokens, tokens, router]);
+
   const {
     handleSubmit,
     control,
@@ -45,6 +62,19 @@ const IndexPage: NextPage = () => {
       });
     }
   };
+
+  if (isCheckingTokens) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+      >
+        <Spin size="large" />
+      </Box>
+    );
+  }
 
   return (
     <>
