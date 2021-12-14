@@ -16,7 +16,7 @@ import {
 import { useAppDispatch, useAppSelector } from "common/store/hooks";
 import { Upload, Button, message, Modal, notification } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { API_URL } from "common/constants/env";
 import { yupResolver } from "@hookform/resolvers/yup/dist/yup";
 import { useForm } from "react-hook-form";
@@ -99,6 +99,7 @@ const DashboardPage: NextPage = () => {
   const {
     handleSubmit: handleBasicDataSubmit,
     control,
+    reset,
     formState: { errors: basicDataErrors, isSubmitting: isBasicDataSubmitting },
   } = useForm<RequestUpdateUser>({
     mode: "all",
@@ -109,6 +110,16 @@ const DashboardPage: NextPage = () => {
     },
     resolver: yupResolver(validationBasicDataSchema),
   });
+
+  useEffect(() => {
+    if (userData?.email) {
+      reset({
+        email: userData.email,
+        name: userData.name,
+        surname: userData.surname,
+      });
+    }
+  }, [userData, reset]);
 
   const onBasicDataSubmit = async (values: RequestUpdateUser) => {
     try {
