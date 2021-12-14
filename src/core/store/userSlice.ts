@@ -168,6 +168,19 @@ export const deleteUserAvatar = createAsyncThunk(
   }
 );
 
+export const deleteUserAccount = createAsyncThunk(
+  "user/deleteUserAccount",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosSecureInstance.delete(`/users/me/delete`);
+      removeTokens();
+      return response.data;
+    } catch (error) {
+      return rejectWithValue((error as FailedReqMsg).message);
+    }
+  }
+);
+
 const counterSlice = createSlice({
   name: "user",
   initialState,

@@ -5,6 +5,7 @@ import DashboardWrapper from "common/wrappers/DashboardWrapper";
 import Box from "components/Box";
 import { Avatar, Typography } from "antd";
 import {
+  deleteUserAccount,
   deleteUserAvatar,
   fetchUserData,
   selectUserProfile,
@@ -13,10 +14,9 @@ import {
   updateUserPassword,
 } from "core/store/userSlice";
 import { useAppDispatch, useAppSelector } from "common/store/hooks";
-import { Upload, Button, message } from "antd";
+import { Upload, Button, message, Modal } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useRef, useState } from "react";
-
 import { API_URL } from "common/constants/env";
 import { yupResolver } from "@hookform/resolvers/yup/dist/yup";
 import { useForm } from "react-hook-form";
@@ -27,6 +27,8 @@ import {
 } from "types/novel-server.types";
 import yup from "common/yup";
 import InputReactHookForm from "components/reactHookForm/InputReactHookForm";
+import { useRouter } from "next/router";
+import { PATHS_CORE } from "common/constants/paths";
 
 const { Paragraph } = Typography;
 
@@ -46,12 +48,15 @@ const validationPasswordSchema = yup.object({
 
 const DashboardPage: NextPage = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
 
   const userData = useAppSelector(selectUserProfile);
 
   const [isUpdateAvatarBtnLoading, setIsUpdateAvatarBtnLoading] =
     useState(false);
   const [isDeleteAvatarBtnLoading, setIsDeleteAvatarBtnLoading] =
+    useState(false);
+  const [isDeleteAccountModalVisible, setIsDeleteAccountModalVisible] =
     useState(false);
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
@@ -129,6 +134,15 @@ const DashboardPage: NextPage = () => {
       message.info("updated");
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      await dispatch(deleteUserAccount());
+      router.push(PATHS_CORE.LOGIN);
+    } catch (error) {
+      message.error(error as string);
     }
   };
 
@@ -256,6 +270,35 @@ const DashboardPage: NextPage = () => {
               </Box>
             </form>
           </Box>
+
+          <Box paddingTop={32} paddingBottom={16} maxWidth={700}>
+            <Paragraph strong>Usuń konto</Paragraph>
+
+            <Box paddingTop={16} display="flex" justifyContent="flex-end">
+              <Button
+                type="primary"
+                danger
+                onClick={() => setIsDeleteAccountModalVisible(true)}
+              >
+                Usuń konto
+              </Button>
+            </Box>
+          </Box>
+          <Modal
+            title="Usuwanie konta"
+            visible={isDeleteAccountModalVisible}
+            onOk={handleDeleteAccount}
+            onCancel={() => setIsDeleteAccountModalVisible(false)}
+            okButtonProps={{
+              type: "primary",
+              danger: true,
+            }}
+          >
+            <Typography>
+              Czy na pewno chcesz usunąć konto? Tej operacji nie można odwrócić
+              a Twój postep w grze zostanie utracony.
+            </Typography>
+          </Modal>
         </DashboardWrapper>
       </PrivateRoute>
     </>
