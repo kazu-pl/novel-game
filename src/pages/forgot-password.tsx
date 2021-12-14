@@ -16,6 +16,7 @@ import {
 import HeadDecorator from "components/HeadDecorator";
 import { sendEmailToRemindPassword } from "core/store/userSlice";
 import { useAppDispatch } from "common/store/hooks";
+import { notification } from "antd";
 
 const validationSchema = yup.object({
   email: yup.string().email().required(),
@@ -35,10 +36,16 @@ const ForgotPassword: NextPage = () => {
   const onSubmit = async (values: RequestRemindPasswordCredentials) => {
     try {
       const response = await dispatch(sendEmailToRemindPassword(values));
-      const payload = response.payload as SuccessfulReqMsg;
-      alert(payload.message);
+      const { message } = response.payload as SuccessfulReqMsg;
+      notification.success({
+        message: null,
+        description: message,
+      });
     } catch (error) {
-      alert(error);
+      notification.error({
+        message: null,
+        description: error as string,
+      });
     }
   };
   return (

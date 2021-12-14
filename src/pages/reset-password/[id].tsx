@@ -12,6 +12,8 @@ import { resetUserPassword } from "core/store/userSlice";
 import { useAppDispatch } from "common/store/hooks";
 import { useRouter } from "next/router";
 import { PATHS_CORE } from "common/constants/paths";
+import { SuccessfulReqMsg } from "types/novel-server.types";
+import { notification } from "antd";
 
 const validationSchema = yup.object({
   password: yup.string().required(),
@@ -38,8 +40,18 @@ const ResetPasswordPage: NextPage = () => {
       const response = await dispatch(
         resetUserPassword({ ...values, userId: router.query.id as string })
       );
+      const { message } = response.payload as SuccessfulReqMsg;
+      notification.success({
+        message: null,
+        description: message,
+      });
       router.push(PATHS_CORE.LOGIN);
-    } catch (error) {}
+    } catch (error) {
+      notification.error({
+        message: null,
+        description: error as string,
+      });
+    }
   };
 
   return (
