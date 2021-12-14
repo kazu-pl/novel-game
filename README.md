@@ -1,3 +1,20 @@
+# How to get rid of warning of not using useLayoutEffect:
+
+If you use `useLayoutEffect` in `Next` on some page and you refresh page on that page you will get warning in console. It goes like this:
+
+`warning: useLayoutEffect does nothing on the server, because its effect cannot be encoded into the server renderer's output format. This will lead to a mismatch between the initial, non-hydrated UI and the intended UI. To avoid this, useLayoutEffect should only be used in components that render exclusively on the client. See https://reactjs.org/link/uselayouteffect-ssr for common fixes.`
+
+To fix this, you can visit that page `https://reactjs.org/link/uselayouteffect-ssr` and search for common fixes. To solve this, I use:
+
+```
+// src/pages/_app.tsx
+
+import React from "react";
+
+if (!process.browser) React.useLayoutEffect = React.useEffect;
+
+```
+
 # How to use yup and yupResolver with react-hook-form in Next.js v12 or later:
 
 If you have error like this:
