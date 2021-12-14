@@ -1,5 +1,6 @@
 import type { NextPage } from "next";
 import Button from "antd/lib/button";
+import { notification } from "antd";
 import CoreView from "layouts/CoreView";
 import { useForm } from "react-hook-form";
 import InputReactHookForm from "components/reactHookForm/InputReactHookForm";
@@ -38,7 +39,10 @@ const IndexPage: NextPage = () => {
 
       router.push(PATHS_DASHBOARD.DASHBOARD);
     } catch (error) {
-      alert(error);
+      notification.error({
+        message: null,
+        description: error as string,
+      });
     }
   };
 

@@ -7,7 +7,11 @@ import { yupResolver } from "@hookform/resolvers/yup/dist/yup";
 import yup from "common/yup";
 import Box from "components/Box";
 import { PATHS_CORE } from "common/constants/paths";
-import { RequestRegisterCredentials } from "types/novel-server.types";
+import {
+  RequestRegisterCredentials,
+  SuccessfulReqMsg,
+} from "types/novel-server.types";
+import { notification } from "antd";
 import HeadDecorator from "components/HeadDecorator";
 import { useAppDispatch } from "common/store/hooks";
 import { register } from "core/store/userSlice";
@@ -47,10 +51,18 @@ const IndexPage: NextPage = () => {
 
   const onSubmit = async (values: RequestRegisterCredentials) => {
     try {
-      await dispatch(register(values));
+      const response = await dispatch(register(values));
+      const { message } = response.payload as SuccessfulReqMsg;
+      notification.success({
+        message: null,
+        description: message,
+      });
       router.push(PATHS_CORE.LOGIN);
     } catch (error) {
-      alert(error);
+      notification.error({
+        message: null,
+        description: error as string,
+      });
     }
   };
 

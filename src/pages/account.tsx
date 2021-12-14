@@ -14,7 +14,7 @@ import {
   updateUserPassword,
 } from "core/store/userSlice";
 import { useAppDispatch, useAppSelector } from "common/store/hooks";
-import { Upload, Button, message, Modal } from "antd";
+import { Upload, Button, message, Modal, notification } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useRef, useState } from "react";
 import { API_URL } from "common/constants/env";
@@ -24,6 +24,7 @@ import {
   FailedReqMsg,
   RequestRenewPassword,
   RequestUpdateUser,
+  SuccessfulReqMsg,
 } from "types/novel-server.types";
 import yup from "common/yup";
 import InputReactHookForm from "components/reactHookForm/InputReactHookForm";
@@ -86,7 +87,11 @@ const DashboardPage: NextPage = () => {
       await dispatch(deleteUserAvatar());
       dispatch(fetchUserData());
       setIsDeleteAvatarBtnLoading(false);
-    } catch (err) {
+    } catch (error) {
+      notification.error({
+        message: null,
+        description: error as string,
+      });
       setIsDeleteAvatarBtnLoading(false);
     }
   };
@@ -107,11 +112,19 @@ const DashboardPage: NextPage = () => {
 
   const onBasicDataSubmit = async (values: RequestUpdateUser) => {
     try {
-      await dispatch(updateUserData(values));
+      const response = await dispatch(updateUserData(values));
+      const { message } = response.payload as SuccessfulReqMsg;
+      notification.success({
+        message: null,
+        description: message,
+      });
       dispatch(fetchUserData());
     } catch (error) {
       const { message } = error as FailedReqMsg;
-      console.log(message);
+      notification.error({
+        message: null,
+        description: message,
+      });
     }
   };
 
@@ -130,19 +143,34 @@ const DashboardPage: NextPage = () => {
 
   const onPassowrdSubmit = async (values: RequestRenewPassword) => {
     try {
-      await dispatch(updateUserPassword(values));
-      message.info("updated");
-    } catch (err) {
-      console.log(err);
+      const response = await dispatch(updateUserPassword(values));
+      const { message } = response.payload as SuccessfulReqMsg;
+      notification.success({
+        message: null,
+        description: message,
+      });
+    } catch (error) {
+      notification.error({
+        message: null,
+        description: error as string,
+      });
     }
   };
 
   const handleDeleteAccount = async () => {
     try {
-      await dispatch(deleteUserAccount());
+      const response = await dispatch(deleteUserAccount());
+      const { message } = response.payload as SuccessfulReqMsg;
+      notification.success({
+        message: null,
+        description: message,
+      });
       router.push(PATHS_CORE.LOGIN);
     } catch (error) {
-      message.error(error as string);
+      notification.error({
+        message: null,
+        description: error as string,
+      });
     }
   };
 
