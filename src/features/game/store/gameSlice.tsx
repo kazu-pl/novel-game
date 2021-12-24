@@ -27,10 +27,15 @@ export const fetchAct = createAsyncThunk(
   }
 );
 
-const counterSlice = createSlice({
+const gameSlice = createSlice({
   name: "game",
   initialState,
-  reducers: {},
+  reducers: {
+    deleteActData: (state) => {
+      state.act = null;
+      state.isActLoading = false;
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(fetchAct.pending, (state) => {
       state.isActLoading = true;
@@ -46,6 +51,8 @@ const counterSlice = createSlice({
   },
 });
 
+export const { deleteActData } = gameSlice.actions;
+
 export const selectAct = (state: RootState) => state.game;
 
-export default counterSlice.reducer;
+export default gameSlice.reducer;

@@ -3,8 +3,8 @@ import { ActiveView } from "pages/game";
 import { useRouter } from "next/router";
 import { PATHS_DASHBOARD } from "common/constants/paths";
 import GameMenuLayout from "layouts/GameMenuLayout";
-import { selectAct } from "features/game/store/gameSlice";
-import { useAppSelector } from "common/store/hooks";
+import { deleteActData, selectAct } from "features/game/store/gameSlice";
+import { useAppDispatch, useAppSelector } from "common/store/hooks";
 
 export interface GameLoadProps {
   setActiveView: (view: ActiveView) => void;
@@ -12,7 +12,13 @@ export interface GameLoadProps {
 
 const GameMenu = ({ setActiveView }: GameLoadProps) => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const actData = useAppSelector(selectAct);
+
+  const handleExit = () => {
+    dispatch(deleteActData());
+    router.push(PATHS_DASHBOARD.DASHBOARD);
+  };
 
   return (
     <GameMenuLayout>
@@ -51,12 +57,7 @@ const GameMenu = ({ setActiveView }: GameLoadProps) => {
       >
         Zapisz
       </StyledButton>
-      <StyledButton
-        type="text"
-        block
-        size="large"
-        onClick={() => router.push(PATHS_DASHBOARD.DASHBOARD)}
-      >
+      <StyledButton type="text" block size="large" onClick={handleExit}>
         wyjdź
       </StyledButton>
     </GameMenuLayout>
