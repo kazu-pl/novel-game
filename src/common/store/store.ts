@@ -9,6 +9,7 @@ import { Middleware } from "@reduxjs/toolkit";
 
 import userSlice from "core/store/userSlice";
 import counterReducer from "../../features/counter/counterSlice";
+import gameSlice from "features/game/store/gameSlice";
 
 export const throwMiddleware: Middleware = () => (next) => (action) => {
   next(action);
@@ -20,6 +21,7 @@ export const throwMiddleware: Middleware = () => (next) => (action) => {
 const combinedReducer = combineReducers({
   user: userSlice,
   counter: counterReducer,
+  game: gameSlice,
 });
 
 export type RootState = ReturnType<typeof combinedReducer>;
