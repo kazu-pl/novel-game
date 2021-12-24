@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { useAppDispatch } from "common/store/hooks";
-import { fetchUserData } from "core/store/userSlice";
+import { useAppDispatch, useAppSelector } from "common/store/hooks";
+import { fetchUserData, selectUserProfile } from "core/store/userSlice";
 
 export interface UserProfileWrapperProps {
   children: React.ReactNode;
@@ -8,10 +8,13 @@ export interface UserProfileWrapperProps {
 
 const UserProfileWrapper = ({ children }: UserProfileWrapperProps) => {
   const dispatch = useAppDispatch();
+  const userData = useAppSelector(selectUserProfile);
 
   useEffect(() => {
-    dispatch(fetchUserData());
-  }, [dispatch]);
+    if (!userData) {
+      dispatch(fetchUserData());
+    }
+  }, [dispatch, userData]);
 
   return <>{children}</>;
 };
