@@ -5,15 +5,25 @@ import { PATHS_DASHBOARD } from "common/constants/paths";
 import GameMenuLayout from "layouts/GameMenuLayout";
 import { deleteActData, selectAct } from "features/game/store/gameSlice";
 import { useAppDispatch, useAppSelector } from "common/store/hooks";
+import { Modal } from "antd";
+import { useState } from "react";
 
 export interface GameLoadProps {
   setActiveView: (view: ActiveView) => void;
+  onResumeBtnClick: () => void;
+  onStartNewGameClick: () => void;
 }
 
-const GameMenu = ({ setActiveView }: GameLoadProps) => {
+const GameMenu = ({
+  setActiveView,
+  onResumeBtnClick,
+  onStartNewGameClick,
+}: GameLoadProps) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const actData = useAppSelector(selectAct);
+  const [isStartNewGameModalVisible, setIsStartNewGameModalVisible] =
+    useState(false);
 
   const handleExit = () => {
     dispatch(deleteActData());
@@ -27,7 +37,10 @@ const GameMenu = ({ setActiveView }: GameLoadProps) => {
           type="text"
           block
           size="large"
-          onClick={() => setActiveView("game")}
+          onClick={() => {
+            onResumeBtnClick();
+            setActiveView("game");
+          }}
         >
           Wznów
         </StyledButton>
@@ -36,10 +49,17 @@ const GameMenu = ({ setActiveView }: GameLoadProps) => {
         type="text"
         block
         size="large"
-        onClick={() => setActiveView("game")}
+        onClick={() => {
+          if (actData.act !== null) {
+            setIsStartNewGameModalVisible(true);
+          } else {
+            setActiveView("game");
+          }
+        }}
       >
         Nowa gra
       </StyledButton>
+
       <StyledButton
         type="text"
         block
@@ -53,13 +73,28 @@ const GameMenu = ({ setActiveView }: GameLoadProps) => {
         block
         size="large"
         disabled={!actData.act}
-        onClick={() => console.log("zapisano")}
+        onClick={() => alert("zapisano!")}
       >
         Zapisz
       </StyledButton>
       <StyledButton type="text" block size="large" onClick={handleExit}>
         wyjdź
       </StyledButton>
+
+      <Modal
+        title="Rozpocznij nową grę"
+        visible={isStartNewGameModalVisible}
+        onOk={() => {
+          onStartNewGameClick();
+          setActiveView("game");
+        }}
+        onCancel={() => setIsStartNewGameModalVisible(false)}
+      >
+        <p>
+          Jesteś w trakcie rozgrywki. Jeśli teraz rozpoczniesz nową grę to
+          stracisz niezapisay stan gry. Czy chcesz kontynuowac?
+        </p>
+      </Modal>
     </GameMenuLayout>
   );
 };

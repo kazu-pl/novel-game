@@ -45,7 +45,7 @@ const gameSlice = createSlice({
       state.isActLoading = false;
     });
     builder.addCase(fetchAct.fulfilled, (state, action) => {
-      state.act = action.payload;
+      state.act = action.payload.data;
       state.isActLoading = false;
     });
   },

@@ -11,17 +11,29 @@ export type ActiveView = "menu" | "load" | "game";
 
 const GameMenuPage: NextPage = () => {
   const [activeView, setActiveView] = useState<ActiveView>("menu");
+  const [showActTitleOnEnter, setShowActTitleOnEnter] = useState(true);
 
   return (
     <>
       <HeadDecorator title="Time In My Hands" description="Strona gry" />
 
       <PrivateRoute>
-        {activeView === "menu" && <GameMenu setActiveView={setActiveView} />}
+        {activeView === "menu" && (
+          <GameMenu
+            setActiveView={setActiveView}
+            onResumeBtnClick={() => setShowActTitleOnEnter(false)}
+            onStartNewGameClick={() => setShowActTitleOnEnter(true)}
+          />
+        )}
         {activeView === "load" && (
           <GameLoad goBack={() => setActiveView("menu")} />
         )}
-        {activeView === "game" && <Game />}
+        {activeView === "game" && (
+          <Game
+            showActTitleOnEnter={showActTitleOnEnter}
+            setActiveView={setActiveView}
+          />
+        )}
       </PrivateRoute>
     </>
   );

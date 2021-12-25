@@ -21,10 +21,11 @@ const GameMenuLayout = ({ children }: GameMenuLayoutProps) => {
           backgroundImage="linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4))"
           boxShadow="0 0 15px 1px black"
           borderRadius={10}
-          textShadow="5px 5px 3px black"
           color="white"
         >
-          <Title style={{ color: "white" }}>Time In My hands</Title>
+          <Title style={{ color: "white", textShadow: "5px 5px 3px black" }}>
+            Time In My hands
+          </Title>
           {children}
         </Box>
       </Box>
