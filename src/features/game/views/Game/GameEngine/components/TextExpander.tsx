@@ -1,16 +1,16 @@
 import styled from "styled-components";
 import { Typography } from "antd";
-// import {
-//   useCallback,
-//   useEffect,
-//   useLayoutEffect,
-//   useRef,
-//   useState,
-// } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useAppDispatch, useAppSelector } from "common/store/hooks";
+import {
+  selectIsTextRevealed,
+  setIsTextRevealed,
+} from "features/game/store/gameSlice";
 const { Text } = Typography;
 
 export const StyledCharacterText = styled(Text)`
   &&& {
+    user-select: none;
     color: white;
     font-size: 18px;
   }
@@ -24,46 +24,39 @@ export interface TextExpanderProps {
 
 const TextExpander = ({
   children,
-}: // showWholeText,
-// timeToRevealNextLetter = 100,
-TextExpanderProps) => {
-  // const [textToDisplay, setTextToDisplay] = useState("");
-  // const textIndexRef = useRef(0);
+  timeToRevealNextLetter = 70,
+}: TextExpanderProps) => {
+  const [textToDisplay, setTextToDisplay] = useState("");
+  const textIndexRef = useRef(0);
+  const isTextRevealed = useAppSelector(selectIsTextRevealed);
+  const dispatch = useAppDispatch();
 
-  // useLayoutEffect(() => {
-  //   if (children) {
-  //     setTextToDisplay(children[0]);
-  //     textIndexRef.current = 0;
-  //   }
-  // }, [children]);
+  useEffect(() => {
+    if (!children.length) return;
 
-  // const displayNextLetter = useCallback(() => {
-  //   setTextToDisplay((prev) => `${prev}${children[textIndexRef.current]}`);
-  //   textIndexRef.current += 1;
+    const revealText = () => {
+      setTextToDisplay(children.slice(0, textIndexRef.current));
+      textIndexRef.current++;
 
-  //   if (textIndexRef.current < children.length && !showWholeText) {
-  //     window.setTimeout(() => {
-  //       displayNextLetter();
-  //     }, timeToRevealNextLetter);
-  //   }
-  // }, [children, timeToRevealNextLetter, showWholeText]);
+      if (isTextRevealed) {
+        setTextToDisplay(children.slice(0, children.length));
+        textIndexRef.current = 0;
+        window.clearInterval(typingIndex);
+      }
 
-  // useEffect(() => {
-  //   if (!showWholeText) {
-  //     if (textIndexRef.current + 1 < children.length) {
-  //       displayNextLetter();
-  //     }
-  //   } else {
-  //     setTextToDisplay(children);
-  //   }
-  // }, [displayNextLetter, children, showWholeText]);
+      if (textIndexRef.current === children.length) {
+        dispatch(setIsTextRevealed(true));
+        textIndexRef.current = 0;
+        window.clearInterval(typingIndex);
+      }
+    };
 
-  // useEffect(() => {
-  //   console.log({ textToDisplay });
-  // }, [textToDisplay]);
+    const typingIndex = window.setInterval(revealText, timeToRevealNextLetter);
 
-  // return <StyledCharacterText>{textToDisplay}</StyledCharacterText>;
-  return <StyledCharacterText>{children}</StyledCharacterText>;
+    return () => window.clearInterval(typingIndex);
+  }, [children, isTextRevealed, dispatch, timeToRevealNextLetter]);
+
+  return <StyledCharacterText>{textToDisplay}</StyledCharacterText>;
 };
 
 export default TextExpander;

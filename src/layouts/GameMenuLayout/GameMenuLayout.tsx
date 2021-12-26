@@ -23,7 +23,13 @@ const GameMenuLayout = ({ children }: GameMenuLayoutProps) => {
           borderRadius={10}
           color="white"
         >
-          <Title style={{ color: "white", textShadow: "5px 5px 3px black" }}>
+          <Title
+            style={{
+              color: "white",
+              textShadow: "5px 5px 3px black",
+              userSelect: "none",
+            }}
+          >
             Time In My hands
           </Title>
           {children}

@@ -1,7 +1,13 @@
 import { useEffect } from "react";
 
-import { useAppDispatch } from "common/store/hooks";
-import { deleteActData } from "features/game/store/gameSlice";
+import { useAppDispatch, useAppSelector } from "common/store/hooks";
+import {
+  deleteActData,
+  resetCurrentDialogIndex,
+  resetCurrentSceneIndex,
+  selectAct,
+  setIsTextRevealed,
+} from "features/game/store/gameSlice";
 
 export interface EndGameScreenWrapperProps {
   onRedirectToMenu?: () => void;
@@ -15,13 +21,18 @@ const EndGameScreenWrapper = ({
   redirectAfterTime = 8,
 }: EndGameScreenWrapperProps) => {
   const dispatch = useAppDispatch();
+  const actData = useAppSelector(selectAct);
 
   useEffect(() => {
-    setTimeout(() => {
-      dispatch(deleteActData());
-      onRedirectToMenu && onRedirectToMenu();
-    }, redirectAfterTime * 1000);
-  }, [redirectAfterTime, onRedirectToMenu, dispatch]);
+    !!actData.act &&
+      setTimeout(() => {
+        dispatch(deleteActData());
+        onRedirectToMenu && onRedirectToMenu();
+        dispatch(resetCurrentDialogIndex());
+        dispatch(resetCurrentSceneIndex());
+        dispatch(setIsTextRevealed(false));
+      }, redirectAfterTime * 1000);
+  }, [redirectAfterTime, onRedirectToMenu, dispatch, actData.act]);
 
   return <>{children}</>;
 };

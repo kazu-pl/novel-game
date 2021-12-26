@@ -31,6 +31,8 @@ import {
   resetCurrentSceneIndex,
   selectCurrentDialogIndex,
   selectCurrentSceneIndex,
+  selectIsTextRevealed,
+  setIsTextRevealed,
 } from "features/game/store/gameSlice";
 import EndGameScreenWrapper from "./components/EndGameScreenWrapper";
 
@@ -53,7 +55,7 @@ const GameEngine = ({
   const currentDialogIndex = useAppSelector(selectCurrentDialogIndex);
   const currentSceneIndex = useAppSelector(selectCurrentSceneIndex);
   const [isGameEnded, setIsGameEnded] = useState(false);
-
+  const isTextRevealed = useAppSelector(selectIsTextRevealed);
   const [isGameBoardVisible, setIsGameBoardVisible] = useState(false);
 
   useLayoutEffect(() => {
@@ -80,8 +82,15 @@ const GameEngine = ({
         currentDialogIndex + 1 <
         gameData.scenes[currentSceneIndex].dialogs.length
       ) {
-        // still the same dialog array, just another dialog
-        dispatch(increaseCurrentDialogIndex());
+        // next dialog from dialogs array
+        if (!isTextRevealed) {
+          // first reveal whole text before changing to next dialog
+          dispatch(setIsTextRevealed(true));
+        } else {
+          // still the same dialog array, just another dialog
+          dispatch(increaseCurrentDialogIndex());
+          dispatch(setIsTextRevealed(false));
+        }
       } else {
         if (currentSceneIndex + 1 < gameData.scenes.length) {
           // next scene
@@ -91,19 +100,40 @@ const GameEngine = ({
           // need to change act / end game
           if (gameData.type !== "end" && gameData.nextAct) {
             // fetch next act
-            dispatch(fetchAct(gameData.nextAct));
-            dispatch(resetCurrentDialogIndex());
-            dispatch(resetCurrentSceneIndex());
-            setShowActTitleOnEnter(true);
+
+            if (!isTextRevealed) {
+              // dialog is still revealing so first reveal it
+              dispatch(setIsTextRevealed(true));
+            } else {
+              // and then fetch next act
+              dispatch(fetchAct(gameData.nextAct));
+              dispatch(resetCurrentDialogIndex());
+              dispatch(resetCurrentSceneIndex());
+              setShowActTitleOnEnter(true);
+            }
           } else if (gameData.type !== "end" && !gameData.nextAct) {
             // there is no next act but game is not ended yet
             message.info(
               "Dotarłeś do końca aktualnie dostępnej historii! Oczekuj na kolejną część. Nie zapomnij zapisać stan gry!"
             );
-          } else {
-            setIsGameEnded(true);
+            dispatch(setIsTextRevealed(false));
             window.removeEventListener("click", changeGameProgress);
-            // end game here
+          } else {
+            // // end game here
+
+            // you can't dispatch below actions here because for example currentDialogIndex in array dependency will change and game will get listener one more time. Those actions are dispatched in EndGameScreenWrapper
+            // // dispatch(setIsTextRevealed(false));
+            // // dispatch(resetCurrentDialogIndex());
+            // // dispatch(resetCurrentSceneIndex());
+
+            if (!isTextRevealed) {
+              // text is still not fully revealed so first reveal it
+              dispatch(setIsTextRevealed(true));
+            } else {
+              // and then end game and remove listener
+              setIsGameEnded(true);
+              window.removeEventListener("click", changeGameProgress);
+            }
           }
         }
       }
@@ -116,19 +146,20 @@ const GameEngine = ({
       gameData.nextAct,
       gameData.type,
       setShowActTitleOnEnter,
+      isTextRevealed,
     ]
   );
 
   useEffect(() => {
-    if (isGameBoardVisible) {
-      // prevents changing dialongs and scenes when click durring showing act title
+    if (!isGameEnded && isGameBoardVisible) {
+      // prevents changing dialongs and scenes when click durring showing act title or when game ended
       window.addEventListener("click", changeGameProgress);
     }
 
     return () => {
       window.removeEventListener("click", changeGameProgress);
     };
-  }, [changeGameProgress, isGameBoardVisible]);
+  }, [changeGameProgress, isGameBoardVisible, isGameEnded]);
 
   if (!isGameBoardVisible)
     return (
@@ -221,7 +252,7 @@ const GameEngine = ({
         </StyledCharacterTextWrapper>
       </StyledDialogTextWrapper>
 
-      {isGameEnded && (
+      {isGameEnded && isTextRevealed && (
         <EndGameScreenWrapper
           redirectAfterTime={12}
           onRedirectToMenu={() => setActiveView("menu")}

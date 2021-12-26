@@ -141,6 +141,7 @@ export const StyledDialogTextWrapper = styled.div`
 `;
 
 export const StyledCharacterNameWrapper = styled.div`
+  user-select: none;
   position: relative;
   align-self: center;
   min-height: 35px;

@@ -8,6 +8,7 @@ import {
   resetCurrentDialogIndex,
   resetCurrentSceneIndex,
   selectAct,
+  setIsTextRevealed,
 } from "features/game/store/gameSlice";
 import { useAppDispatch, useAppSelector } from "common/store/hooks";
 import { Modal } from "antd";
@@ -33,6 +34,9 @@ const GameMenu = ({
   const handleExit = () => {
     dispatch(deleteActData());
     router.push(PATHS_DASHBOARD.DASHBOARD);
+    dispatch(setIsTextRevealed(false));
+    dispatch(resetCurrentDialogIndex());
+    dispatch(resetCurrentSceneIndex());
   };
 
   return (
@@ -63,6 +67,7 @@ const GameMenu = ({
           } else {
             onStartNewGameClick();
             setActiveView("game");
+            dispatch(setIsTextRevealed(false));
             dispatch(resetCurrentDialogIndex());
             dispatch(resetCurrentSceneIndex());
           }

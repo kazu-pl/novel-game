@@ -11,6 +11,7 @@ interface UserState {
   currentGame: {
     currentSceneIndex: number;
     currentDialogIndex: number;
+    isTextRevealed: boolean;
   };
 }
 
@@ -20,6 +21,7 @@ const initialState: UserState = {
   currentGame: {
     currentSceneIndex: 0,
     currentDialogIndex: 0,
+    isTextRevealed: false,
   },
 };
 
@@ -57,6 +59,9 @@ const gameSlice = createSlice({
     resetCurrentDialogIndex: (state) => {
       state.currentGame.currentDialogIndex = 0;
     },
+    setIsTextRevealed: (state, action) => {
+      state.currentGame.isTextRevealed = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchAct.pending, (state) => {
@@ -79,6 +84,7 @@ export const {
   increaseCurrentSceneIndex,
   resetCurrentDialogIndex,
   resetCurrentSceneIndex,
+  setIsTextRevealed,
 } = gameSlice.actions;
 
 export const selectAct = (state: RootState) => state.game;
@@ -86,5 +92,7 @@ export const selectCurrentSceneIndex = (state: RootState) =>
   state.game.currentGame.currentSceneIndex;
 export const selectCurrentDialogIndex = (state: RootState) =>
   state.game.currentGame.currentDialogIndex;
+export const selectIsTextRevealed = (state: RootState) =>
+  state.game.currentGame.isTextRevealed;
 
 export default gameSlice.reducer;
