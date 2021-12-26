@@ -1,6 +1,5 @@
 import styled, { keyframes, css } from "styled-components";
 import { Typography } from "antd";
-import Image from "next/image";
 
 const { Title } = Typography;
 
@@ -50,6 +49,7 @@ export const StyledGameWrapper = styled.div`
   position: relative;
   overflow: hidden;
   height: 100vh;
+  background-color: black;
 `;
 
 export const StyledEndGameScreenWrapper = styled.div<{
@@ -92,7 +92,7 @@ export const StyledEndGameText = styled(Title)<{
     `}
 `;
 
-export const StyledBgImg = styled(Image)`
+export const StyledBgImg = styled.img`
   width: 100%;
   object-fit: cover;
   aspect-ratio: 16/9;
@@ -132,7 +132,7 @@ export const StyledDialogTextWrapper = styled.div`
   color: white;
 
   padding: 0 0px 8px 0px;
-  border-radius: 4px;
+  border-radius: 8px;
 
   display: flex;
   flex-direction: column;
@@ -156,6 +156,8 @@ export const StyledCharacterNameWrapper = styled.div`
     rgba(255, 255, 255, 0.25) 0%,
     rgba(255, 255, 255, 0.25) 100%
   );
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
 `;
 
 export const StyledCharacterTextWrapper = styled.div`

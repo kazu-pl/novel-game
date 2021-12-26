@@ -32,6 +32,7 @@ import {
   selectCurrentDialogIndex,
   selectCurrentSceneIndex,
   selectIsTextRevealed,
+  setIsCachedImgsLoaded,
   setIsTextRevealed,
 } from "features/game/store/gameSlice";
 import EndGameScreenWrapper from "./components/EndGameScreenWrapper";
@@ -66,7 +67,7 @@ const GameEngine = ({
     if (!isGameBoardVisible && showActTitleOnEnter) {
       setTimeout(() => {
         setIsGameBoardVisible(true);
-      }, actTitleAnimationDuration * 1000);
+      }, (actTitleAnimationDuration + 1) * 1000);
     }
   }, [isGameBoardVisible, showActTitleOnEnter]);
 
@@ -94,8 +95,14 @@ const GameEngine = ({
       } else {
         if (currentSceneIndex + 1 < gameData.scenes.length) {
           // next scene
-          dispatch(resetCurrentDialogIndex());
-          dispatch(increaseCurrentSceneIndex());
+
+          if (!isTextRevealed) {
+            dispatch(setIsTextRevealed(true));
+          } else {
+            dispatch(resetCurrentDialogIndex());
+            dispatch(increaseCurrentSceneIndex());
+            dispatch(setIsTextRevealed(false));
+          }
         } else {
           // need to change act / end game
           if (gameData.type !== "end" && gameData.nextAct) {
@@ -107,16 +114,23 @@ const GameEngine = ({
             } else {
               // and then fetch next act
               dispatch(fetchAct(gameData.nextAct));
+              dispatch(setIsCachedImgsLoaded(false));
               dispatch(resetCurrentDialogIndex());
               dispatch(resetCurrentSceneIndex());
               setShowActTitleOnEnter(true);
+              dispatch(setIsTextRevealed(false));
             }
           } else if (gameData.type !== "end" && !gameData.nextAct) {
             // there is no next act but game is not ended yet
             message.info(
-              "Dotarłeś do końca aktualnie dostępnej historii! Oczekuj na kolejną część. Nie zapomnij zapisać stan gry!"
+              "Dotarłeś do końca aktualnie dostępnej historii. Oczekuj na dalszą część. Nie zapomnij zapisać stan gry!"
             );
-            dispatch(setIsTextRevealed(false));
+            if (!isTextRevealed) {
+              dispatch(setIsTextRevealed(true));
+            } else {
+              dispatch(setIsTextRevealed(false));
+            }
+
             window.removeEventListener("click", changeGameProgress);
           } else {
             // // end game here
@@ -181,7 +195,6 @@ const GameEngine = ({
       <StyledBgImg
         src={`${API_URL + gameData.scenes[0].bgImg.link}`}
         alt="preview background image"
-        layout="fill"
       />
       {gameData?.scenes[currentSceneIndex]?.dialogs[
         currentDialogIndex
@@ -254,12 +267,12 @@ const GameEngine = ({
 
       {isGameEnded && isTextRevealed && (
         <EndGameScreenWrapper
-          redirectAfterTime={12}
+          redirectAfterTime={11}
           onRedirectToMenu={() => setActiveView("menu")}
         >
-          <StyledEndGameScreenWrapper animationDuration={6}>
-            <StyledEndGameText $animationDelay={6} $animationDuration={6}>
-              Dziękuję za grę!
+          <StyledEndGameScreenWrapper animationDuration={4}>
+            <StyledEndGameText $animationDelay={5} $animationDuration={5}>
+              Koniec.
             </StyledEndGameText>
           </StyledEndGameScreenWrapper>
         </EndGameScreenWrapper>

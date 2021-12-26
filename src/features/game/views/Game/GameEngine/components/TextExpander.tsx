@@ -24,7 +24,7 @@ export interface TextExpanderProps {
 
 const TextExpander = ({
   children,
-  timeToRevealNextLetter = 70,
+  timeToRevealNextLetter = 50,
 }: TextExpanderProps) => {
   const [textToDisplay, setTextToDisplay] = useState("");
   const textIndexRef = useRef(0);

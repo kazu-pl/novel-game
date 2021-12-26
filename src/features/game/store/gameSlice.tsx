@@ -8,6 +8,8 @@ import { RootState } from "common/store/store";
 interface UserState {
   act: ActExtendedResponse["data"] | null;
   isActLoading: boolean;
+  isCachedImgsLoaded: boolean;
+  isGameMenuBgLoaded: boolean;
   currentGame: {
     currentSceneIndex: number;
     currentDialogIndex: number;
@@ -18,6 +20,8 @@ interface UserState {
 const initialState: UserState = {
   act: null,
   isActLoading: false,
+  isCachedImgsLoaded: false,
+  isGameMenuBgLoaded: false,
   currentGame: {
     currentSceneIndex: 0,
     currentDialogIndex: 0,
@@ -44,6 +48,12 @@ const gameSlice = createSlice({
     deleteActData: (state) => {
       state.act = null;
       state.isActLoading = false;
+    },
+    setIsGameMenuBgLoaded: (state, action) => {
+      state.isGameMenuBgLoaded = action.payload;
+    },
+    setIsCachedImgsLoaded: (state, action) => {
+      state.isCachedImgsLoaded = action.payload;
     },
     increaseCurrentSceneIndex: (state) => {
       state.currentGame.currentSceneIndex =
@@ -80,6 +90,8 @@ const gameSlice = createSlice({
 
 export const {
   deleteActData,
+  setIsGameMenuBgLoaded,
+  setIsCachedImgsLoaded,
   increaseCurrentDialogIndex,
   increaseCurrentSceneIndex,
   resetCurrentDialogIndex,
@@ -94,5 +106,9 @@ export const selectCurrentDialogIndex = (state: RootState) =>
   state.game.currentGame.currentDialogIndex;
 export const selectIsTextRevealed = (state: RootState) =>
   state.game.currentGame.isTextRevealed;
+export const selectIsCachedImgsLoaded = (state: RootState) =>
+  state.game.isCachedImgsLoaded;
+export const selectIsGameMenuBgLoaded = (state: RootState) =>
+  state.game.isGameMenuBgLoaded;
 
 export default gameSlice.reducer;
