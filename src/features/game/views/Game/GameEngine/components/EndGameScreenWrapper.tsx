@@ -6,6 +6,7 @@ import {
   resetCurrentDialogIndex,
   resetCurrentSceneIndex,
   selectAct,
+  setIsCachedImgsLoaded,
   setIsTextRevealed,
 } from "features/game/store/gameSlice";
 
@@ -31,6 +32,7 @@ const EndGameScreenWrapper = ({
         dispatch(resetCurrentDialogIndex());
         dispatch(resetCurrentSceneIndex());
         dispatch(setIsTextRevealed(false));
+        dispatch(setIsCachedImgsLoaded(false));
       }, redirectAfterTime * 1000);
   }, [redirectAfterTime, onRedirectToMenu, dispatch, actData.act]);
 

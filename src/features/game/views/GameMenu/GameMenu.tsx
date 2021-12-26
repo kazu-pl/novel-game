@@ -8,6 +8,7 @@ import {
   resetCurrentDialogIndex,
   resetCurrentSceneIndex,
   selectAct,
+  setIsCachedImgsLoaded,
   setIsTextRevealed,
 } from "features/game/store/gameSlice";
 import { useAppDispatch, useAppSelector } from "common/store/hooks";
@@ -37,6 +38,7 @@ const GameMenu = ({
     dispatch(setIsTextRevealed(false));
     dispatch(resetCurrentDialogIndex());
     dispatch(resetCurrentSceneIndex());
+    dispatch(setIsCachedImgsLoaded(false));
   };
 
   return (
@@ -70,6 +72,7 @@ const GameMenu = ({
             dispatch(setIsTextRevealed(false));
             dispatch(resetCurrentDialogIndex());
             dispatch(resetCurrentSceneIndex());
+            dispatch(setIsCachedImgsLoaded(false));
           }
         }}
       >
@@ -105,6 +108,8 @@ const GameMenu = ({
           setActiveView("game");
           dispatch(resetCurrentDialogIndex());
           dispatch(resetCurrentSceneIndex());
+          dispatch(setIsTextRevealed(false));
+          dispatch(setIsCachedImgsLoaded(false));
         }}
         onCancel={() => setIsStartNewGameModalVisible(false)}
       >
