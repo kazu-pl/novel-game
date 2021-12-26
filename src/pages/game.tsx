@@ -1,21 +1,61 @@
 import type { NextPage } from "next";
+import { useEffect, useState } from "react";
 import HeadDecorator from "components/HeadDecorator";
 import PrivateRoute from "common/router/PrivateRoute";
-import DashboardWrapper from "common/wrappers/DashboardWrapper";
-import Box from "components/Box";
 
-const DashboardPage: NextPage = () => {
+import Game from "features/game/views/Game";
+import GameLoad from "features/game/views/GameLoad";
+import GameMenu from "features/game/views/GameMenu";
+
+export type ActiveView = "menu" | "load" | "game";
+
+const GameMenuPage: NextPage = () => {
+  const [activeView, setActiveView] = useState<ActiveView>("menu");
+  const [showActTitleOnEnter, setShowActTitleOnEnter] = useState(true);
+  const [firstActToFetchId, setFirstActToFetchId] = useState<
+    string | null | undefined
+  >(null);
+
+  useEffect(() => {
+    return () => {
+      if (!!document.fullscreenElement) {
+        document.exitFullscreen();
+      }
+    };
+  }, []);
+
   return (
     <>
-      <HeadDecorator title="dashbaord" description="Strona dashbaordu" />
+      <HeadDecorator title="Time In My Hands" description="Strona gry" />
 
       <PrivateRoute>
-        <DashboardWrapper title="Dashboard">
-          <Box minHeight={"500vh"}>game</Box>
-        </DashboardWrapper>
+        {activeView === "menu" && (
+          <GameMenu
+            setActiveView={setActiveView}
+            onResumeBtnClick={() => {
+              setShowActTitleOnEnter(false);
+            }}
+            onStartNewGameClick={() => {
+              setFirstActToFetchId("start");
+              setShowActTitleOnEnter(true);
+            }}
+          />
+        )}
+        {activeView === "load" && (
+          <GameLoad goBack={() => setActiveView("menu")} />
+        )}
+        {activeView === "game" && (
+          <Game
+            showActTitleOnEnter={showActTitleOnEnter}
+            setActiveView={setActiveView}
+            setFirstActToFetchId={setFirstActToFetchId}
+            actIdToFetch={firstActToFetchId}
+            setShowActTitleOnEnter={setShowActTitleOnEnter}
+          />
+        )}
       </PrivateRoute>
     </>
   );
 };
 
-export default DashboardPage;
+export default GameMenuPage;
