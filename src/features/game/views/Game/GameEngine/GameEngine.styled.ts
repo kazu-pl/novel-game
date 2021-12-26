@@ -2,7 +2,7 @@ import styled, { keyframes, css } from "styled-components";
 import { Typography } from "antd";
 import Image from "next/image";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const fadeIn = keyframes`
   from {
@@ -46,10 +46,57 @@ export const StyledActTitle = styled(Title)<{
     `}
 `;
 
+export const StyledGameWrapper = styled.div`
+  position: relative;
+  overflow: hidden;
+  height: 100vh;
+`;
+
+export const StyledEndGameScreenWrapper = styled.div<{
+  animationDuration?: number;
+}>`
+  z-index: 101;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: white;
+  opacity: 0;
+
+  ${({ animationDuration = 6 }) =>
+    css`
+      /* forwards means that after animation is finished its last state remains */
+      animation: ${fadeIn} ${animationDuration}s 0s linear forwards;
+    `}
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const StyledEndGameText = styled(Title)<{
+  $animationDuration?: number;
+  $animationDelay?: number;
+}>`
+  opacity: 0;
+  user-select: none;
+  ${({ $animationDuration = 6, $animationDelay = 6 }) =>
+    css`
+      /* forwards means that after animation is finished its last state remains */
+      animation: ${fadeIn} ${$animationDuration / 3}s ${$animationDelay}s linear
+          forwards,
+        ${fadeOut} ${$animationDuration / 3}s
+          ${($animationDuration / 3) * $animationDelay}s linear forwards;
+    `}
+`;
+
 export const StyledBgImg = styled(Image)`
   width: 100%;
   object-fit: cover;
   aspect-ratio: 16/9;
+  user-select: none;
 `;
 
 interface StyledCharacterImgProps {
@@ -96,9 +143,12 @@ export const StyledDialogTextWrapper = styled.div`
 export const StyledCharacterNameWrapper = styled.div`
   position: relative;
   align-self: center;
-  min-height: 24px;
+  min-height: 35px;
   width: 100%;
-  text-align: center;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 20px;
   background: linear-gradient(
     90deg,
@@ -109,11 +159,4 @@ export const StyledCharacterNameWrapper = styled.div`
 
 export const StyledCharacterTextWrapper = styled.div`
   padding: 8px;
-`;
-
-export const StyledCharacterText = styled(Text)`
-  &&& {
-    color: white;
-    font-size: 18px;
-  }
 `;

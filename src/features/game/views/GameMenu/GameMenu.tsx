@@ -3,7 +3,12 @@ import { ActiveView } from "pages/game";
 import { useRouter } from "next/router";
 import { PATHS_DASHBOARD } from "common/constants/paths";
 import GameMenuLayout from "layouts/GameMenuLayout";
-import { deleteActData, selectAct } from "features/game/store/gameSlice";
+import {
+  deleteActData,
+  resetCurrentDialogIndex,
+  resetCurrentSceneIndex,
+  selectAct,
+} from "features/game/store/gameSlice";
 import { useAppDispatch, useAppSelector } from "common/store/hooks";
 import { Modal } from "antd";
 import { useState } from "react";
@@ -37,7 +42,10 @@ const GameMenu = ({
           type="text"
           block
           size="large"
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
+            // e.stopPropagation(); prevents event bubbling, without this after entering game again, you would see next dialog. Found here:
+            // https://stackoverflow.com/questions/27625584/attaching-click-event-listener-in-onclick-immediately-calls-that-event-listener
             onResumeBtnClick();
             setActiveView("game");
           }}
@@ -53,7 +61,10 @@ const GameMenu = ({
           if (actData.act !== null) {
             setIsStartNewGameModalVisible(true);
           } else {
+            onStartNewGameClick();
             setActiveView("game");
+            dispatch(resetCurrentDialogIndex());
+            dispatch(resetCurrentSceneIndex());
           }
         }}
       >
@@ -87,6 +98,8 @@ const GameMenu = ({
         onOk={() => {
           onStartNewGameClick();
           setActiveView("game");
+          dispatch(resetCurrentDialogIndex());
+          dispatch(resetCurrentSceneIndex());
         }}
         onCancel={() => setIsStartNewGameModalVisible(false)}
       >

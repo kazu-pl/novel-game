@@ -7,29 +7,33 @@ import { StyledLoadingErrorText, StyledLoadingText } from "./Game.styled";
 import GameEngine from "./GameEngine";
 import { ActiveView } from "pages/game";
 
-interface GameSave {}
-
 export interface GameProps {
-  gameSave?: GameSave;
+  actIdToFetch?: string | null;
   showActTitleOnEnter?: boolean;
   setActiveView: React.Dispatch<React.SetStateAction<ActiveView>>;
+  setFirstActToFetchId: React.Dispatch<
+    React.SetStateAction<string | null | undefined>
+  >;
+  setShowActTitleOnEnter: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Game = ({ gameSave, showActTitleOnEnter, setActiveView }: GameProps) => {
+const Game = ({
+  actIdToFetch,
+  showActTitleOnEnter,
+  setShowActTitleOnEnter,
+  setFirstActToFetchId,
+  setActiveView,
+}: GameProps) => {
   const dispatch = useAppDispatch();
   const actData = useAppSelector(selectAct);
 
   useEffect(() => {
-    if (!actData.act) {
-      if (gameSave) {
-        //// download saved game
-        // dispatch(fetchAct(save));
-      } else {
-        // start new game
-        dispatch(fetchAct("start"));
-      }
+    if (actIdToFetch) {
+      // fetch act but only if actIdToFetch is passed (it will be passed only when starting new game or load game. After game is finished no actIdToFetch will be passed)
+      dispatch(fetchAct(actIdToFetch));
+      setFirstActToFetchId(null);
     }
-  }, [dispatch, gameSave, actData.act]);
+  }, [dispatch, actIdToFetch, setFirstActToFetchId]);
 
   if (actData.isActLoading)
     return (
@@ -64,7 +68,7 @@ const Game = ({ gameSave, showActTitleOnEnter, setActiveView }: GameProps) => {
     );
 
   // here for a short while actData is still not null because it's still being assigned to redux store but it will exist here so just because of that I check once again if actData is null to return black page before act will load in redux and the real Game will appear
-  if (actData === null)
+  if (actData === null) {
     return (
       <Box
         backgroundColor="black"
@@ -74,12 +78,13 @@ const Game = ({ gameSave, showActTitleOnEnter, setActiveView }: GameProps) => {
         alignItems="center"
       ></Box>
     );
-
+  }
   return (
     <GameEngine
       gameData={actData.act!}
       showActTitleOnEnter={showActTitleOnEnter}
       setActiveView={setActiveView}
+      setShowActTitleOnEnter={setShowActTitleOnEnter}
     />
   );
 };

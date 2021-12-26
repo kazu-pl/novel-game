@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import HeadDecorator from "components/HeadDecorator";
 import PrivateRoute from "common/router/PrivateRoute";
 
@@ -12,6 +12,17 @@ export type ActiveView = "menu" | "load" | "game";
 const GameMenuPage: NextPage = () => {
   const [activeView, setActiveView] = useState<ActiveView>("menu");
   const [showActTitleOnEnter, setShowActTitleOnEnter] = useState(true);
+  const [firstActToFetchId, setFirstActToFetchId] = useState<
+    string | null | undefined
+  >(null);
+
+  useEffect(() => {
+    return () => {
+      if (!!document.fullscreenElement) {
+        document.exitFullscreen();
+      }
+    };
+  }, []);
 
   return (
     <>
@@ -21,8 +32,13 @@ const GameMenuPage: NextPage = () => {
         {activeView === "menu" && (
           <GameMenu
             setActiveView={setActiveView}
-            onResumeBtnClick={() => setShowActTitleOnEnter(false)}
-            onStartNewGameClick={() => setShowActTitleOnEnter(true)}
+            onResumeBtnClick={() => {
+              setShowActTitleOnEnter(false);
+            }}
+            onStartNewGameClick={() => {
+              setFirstActToFetchId("start");
+              setShowActTitleOnEnter(true);
+            }}
           />
         )}
         {activeView === "load" && (
@@ -32,6 +48,9 @@ const GameMenuPage: NextPage = () => {
           <Game
             showActTitleOnEnter={showActTitleOnEnter}
             setActiveView={setActiveView}
+            setFirstActToFetchId={setFirstActToFetchId}
+            actIdToFetch={firstActToFetchId}
+            setShowActTitleOnEnter={setShowActTitleOnEnter}
           />
         )}
       </PrivateRoute>

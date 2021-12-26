@@ -1,5 +1,4 @@
 import { Button, Typography } from "antd";
-import ArrowLeftOutlined from "@ant-design/icons";
 import GameMenuLayout from "layouts/GameMenuLayout";
 
 const { Paragraph } = Typography;
@@ -21,7 +20,6 @@ const GameLoad = ({ goBack }: LoadGameProps) => {
       <Paragraph style={{ color: "white" }}>
         Wybierz zapis z gry wczytaj grę
       </Paragraph>
-      <ArrowLeftOutlined />
 
       {tempGameSaves.map((save) => (
         <div

@@ -8,11 +8,19 @@ import { RootState } from "common/store/store";
 interface UserState {
   act: ActExtendedResponse["data"] | null;
   isActLoading: boolean;
+  currentGame: {
+    currentSceneIndex: number;
+    currentDialogIndex: number;
+  };
 }
 
 const initialState: UserState = {
   act: null,
   isActLoading: false,
+  currentGame: {
+    currentSceneIndex: 0,
+    currentDialogIndex: 0,
+  },
 };
 
 export const fetchAct = createAsyncThunk(
@@ -35,6 +43,20 @@ const gameSlice = createSlice({
       state.act = null;
       state.isActLoading = false;
     },
+    increaseCurrentSceneIndex: (state) => {
+      state.currentGame.currentSceneIndex =
+        state.currentGame.currentSceneIndex + 1;
+    },
+    increaseCurrentDialogIndex: (state) => {
+      state.currentGame.currentDialogIndex =
+        state.currentGame.currentDialogIndex + 1;
+    },
+    resetCurrentSceneIndex: (state) => {
+      state.currentGame.currentSceneIndex = 0;
+    },
+    resetCurrentDialogIndex: (state) => {
+      state.currentGame.currentDialogIndex = 0;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchAct.pending, (state) => {
@@ -51,8 +73,18 @@ const gameSlice = createSlice({
   },
 });
 
-export const { deleteActData } = gameSlice.actions;
+export const {
+  deleteActData,
+  increaseCurrentDialogIndex,
+  increaseCurrentSceneIndex,
+  resetCurrentDialogIndex,
+  resetCurrentSceneIndex,
+} = gameSlice.actions;
 
 export const selectAct = (state: RootState) => state.game;
+export const selectCurrentSceneIndex = (state: RootState) =>
+  state.game.currentGame.currentSceneIndex;
+export const selectCurrentDialogIndex = (state: RootState) =>
+  state.game.currentGame.currentDialogIndex;
 
 export default gameSlice.reducer;

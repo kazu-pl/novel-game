@@ -15,5 +15,6 @@ export const StyledLoadingText = styled(Text)`
     color: rgba(255, 255, 255, 0.85);
     margin: 0;
     padding: 0;
+    user-select: none;
   }
 `;
