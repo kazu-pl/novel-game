@@ -12,8 +12,9 @@ import {
   setIsTextRevealed,
 } from "features/game/store/gameSlice";
 import { useAppDispatch, useAppSelector } from "common/store/hooks";
-import { Modal } from "antd";
+import { Modal, message } from "antd";
 import { useState } from "react";
+import { saveGame } from "features/game/store/gameSlice";
 
 export interface GameLoadProps {
   setActiveView: (view: ActiveView) => void;
@@ -29,6 +30,7 @@ const GameMenu = ({
   const router = useRouter();
   const dispatch = useAppDispatch();
   const actData = useAppSelector(selectAct);
+
   const [isStartNewGameModalVisible, setIsStartNewGameModalVisible] =
     useState(false);
 
@@ -39,6 +41,17 @@ const GameMenu = ({
     dispatch(resetCurrentDialogIndex());
     dispatch(resetCurrentSceneIndex());
     dispatch(setIsCachedImgsLoaded(false));
+  };
+
+  const saveLatestGame = async () => {
+    if (!actData.act) return;
+
+    try {
+      await dispatch(saveGame());
+      message.success("Zapisano!");
+    } catch (err) {
+      message.error("Wystąpił błąd podczas próby zapisy gry!");
+    }
   };
 
   return (
@@ -92,7 +105,7 @@ const GameMenu = ({
         block
         size="large"
         disabled={!actData.act}
-        onClick={() => alert("zapisano!")}
+        onClick={saveLatestGame}
       >
         Zapisz
       </StyledButton>

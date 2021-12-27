@@ -29,6 +29,7 @@ import {
   increaseCurrentSceneIndex,
   resetCurrentDialogIndex,
   resetCurrentSceneIndex,
+  saveGame,
   selectCurrentDialogIndex,
   selectCurrentSceneIndex,
   selectIsTextRevealed,
@@ -175,6 +176,19 @@ const GameEngine = ({
     };
   }, [changeGameProgress, isGameBoardVisible, isGameEnded]);
 
+  const saveLatestGame: React.MouseEventHandler<HTMLElement> = async (e) => {
+    e.stopPropagation();
+    if (!gameData) return;
+
+    message.info("Trwa zapisywanie...");
+    try {
+      await dispatch(saveGame());
+      message.success("Zapisano!");
+    } catch (err) {
+      message.error("Wystąpił błąd podczas próby zapisy gry!");
+    }
+  };
+
   if (!isGameBoardVisible)
     return (
       <Box
@@ -227,7 +241,7 @@ const GameEngine = ({
                   shape="circle"
                   size="small"
                   icon={<SaveOutlined />}
-                  onClick={() => alert("zapisano!")}
+                  onClick={saveLatestGame}
                 />
               </Tooltip>
             </Box>
