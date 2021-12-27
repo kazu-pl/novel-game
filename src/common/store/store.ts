@@ -7,8 +7,7 @@ import {
 } from "@reduxjs/toolkit";
 import { Middleware } from "@reduxjs/toolkit";
 
-import userSlice from "core/store/userSlice";
-import counterReducer from "../../features/counter/counterSlice";
+import userSlice, { logout } from "core/store/userSlice";
 import gameSlice from "features/game/store/gameSlice";
 
 export const throwMiddleware: Middleware = () => (next) => (action) => {
@@ -20,14 +19,13 @@ export const throwMiddleware: Middleware = () => (next) => (action) => {
 
 const combinedReducer = combineReducers({
   user: userSlice,
-  counter: counterReducer,
   game: gameSlice,
 });
 
 export type RootState = ReturnType<typeof combinedReducer>;
 
 const rootReducer = (rootState: RootState | undefined, action: AnyAction) => {
-  if (action.type === "/logout") {
+  if (action.type === logout.fulfilled.type) {
     if (rootState) {
       rootState = undefined;
     }
