@@ -1,7 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosSecureInstance } from "common/axios";
 
-import { ActExtendedResponse, FailedReqMsg } from "types/novel-server.types";
+import {
+  ActExtendedResponse,
+  ExtendedGameSaveResponse,
+  FailedReqMsg,
+  RequestGameSave,
+} from "types/novel-server.types";
 
 import { RootState } from "common/store/store";
 
@@ -15,6 +20,10 @@ interface UserState {
     currentDialogIndex: number;
     isTextRevealed: boolean;
   };
+  gameSaves: {
+    data: ExtendedGameSaveResponse["data"] | null;
+    isLoading: boolean;
+  };
 }
 
 const initialState: UserState = {
@@ -27,6 +36,10 @@ const initialState: UserState = {
     currentDialogIndex: 0,
     isTextRevealed: false,
   },
+  gameSaves: {
+    data: null,
+    isLoading: false,
+  },
 };
 
 export const fetchAct = createAsyncThunk(
@@ -34,6 +47,58 @@ export const fetchAct = createAsyncThunk(
   async (actId: string, { rejectWithValue }) => {
     try {
       const response = await axiosSecureInstance.get(`/acts/${actId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue((error as FailedReqMsg).message);
+    }
+  }
+);
+
+export const saveGame = createAsyncThunk(
+  "game/saveGame",
+  async (_, { rejectWithValue, getState }) => {
+    const state = getState() as RootState;
+    const currentSceneIndex = state.game.currentGame.currentSceneIndex;
+    const currentDialogIndex = state.game.currentGame.currentDialogIndex;
+
+    try {
+      await axiosSecureInstance.post(`/users/me/game-saves`, {
+        actId: state.game.act!._id,
+        actTitle: state.game.act!.title,
+        sceneIndex: currentSceneIndex,
+        dialogIndex: currentDialogIndex,
+        characterSayingText:
+          state.game.act!.scenes[currentSceneIndex].dialogs[currentDialogIndex]
+            .characterSayingText,
+        text: state.game.act!.scenes[currentSceneIndex].dialogs[
+          currentDialogIndex
+        ].text,
+      } as RequestGameSave);
+    } catch (error) {
+      return rejectWithValue((error as FailedReqMsg).message);
+    }
+  }
+);
+
+export const fetchGameSaves = createAsyncThunk(
+  "game/fetchGameSaves",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosSecureInstance.get(`/users/me/game-saves`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue((error as FailedReqMsg).message);
+    }
+  }
+);
+
+export const deleteGameSave = createAsyncThunk(
+  "game/deleteGameSave",
+  async (saveId: string, { rejectWithValue }) => {
+    try {
+      const response = await axiosSecureInstance.delete(
+        `/users/me/game-saves/${saveId}/delete`
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue((error as FailedReqMsg).message);
@@ -59,6 +124,12 @@ const gameSlice = createSlice({
       state.currentGame.currentSceneIndex =
         state.currentGame.currentSceneIndex + 1;
     },
+    setCurrentSceneIndex: (state, action) => {
+      state.currentGame.currentSceneIndex = action.payload;
+    },
+    setCurrentDialogIndex: (state, action) => {
+      state.currentGame.currentDialogIndex = action.payload;
+    },
     increaseCurrentDialogIndex: (state) => {
       state.currentGame.currentDialogIndex =
         state.currentGame.currentDialogIndex + 1;
@@ -71,6 +142,12 @@ const gameSlice = createSlice({
     },
     setIsTextRevealed: (state, action) => {
       state.currentGame.isTextRevealed = action.payload;
+    },
+    resetGameSaves: (state) => {
+      state.gameSaves = {
+        data: null,
+        isLoading: false,
+      };
     },
   },
   extraReducers: (builder) => {
@@ -85,6 +162,17 @@ const gameSlice = createSlice({
       state.act = action.payload.data;
       state.isActLoading = false;
     });
+    builder.addCase(fetchGameSaves.pending, (state) => {
+      state.gameSaves.isLoading = true;
+    });
+    builder.addCase(fetchGameSaves.rejected, (state) => {
+      state.act = null;
+      state.gameSaves.isLoading = false;
+    });
+    builder.addCase(fetchGameSaves.fulfilled, (state, action) => {
+      state.gameSaves.data = action.payload.data;
+      state.gameSaves.isLoading = false;
+    });
   },
 });
 
@@ -97,6 +185,9 @@ export const {
   resetCurrentDialogIndex,
   resetCurrentSceneIndex,
   setIsTextRevealed,
+  setCurrentSceneIndex,
+  setCurrentDialogIndex,
+  resetGameSaves,
 } = gameSlice.actions;
 
 export const selectAct = (state: RootState) => state.game;
@@ -110,5 +201,6 @@ export const selectIsCachedImgsLoaded = (state: RootState) =>
   state.game.isCachedImgsLoaded;
 export const selectIsGameMenuBgLoaded = (state: RootState) =>
   state.game.isGameMenuBgLoaded;
+export const selectGameSaves = (state: RootState) => state.game.gameSaves;
 
 export default gameSlice.reducer;

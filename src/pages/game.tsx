@@ -42,7 +42,10 @@ const GameMenuPage: NextPage = () => {
           />
         )}
         {activeView === "load" && (
-          <GameLoad goBack={() => setActiveView("menu")} />
+          <GameLoad
+            setActiveView={setActiveView}
+            setActIdToLoad={setFirstActToFetchId}
+          />
         )}
         {activeView === "game" && (
           <Game
