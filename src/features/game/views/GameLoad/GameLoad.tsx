@@ -139,6 +139,7 @@ const GameLoad = ({ setActiveView, setActIdToLoad }: LoadGameProps) => {
       <Button onClick={() => setActiveView("menu")}>Wstecz</Button>
       <Modal
         title="Usuń zapis gry"
+        cancelText="Anuluj"
         visible={!!gameSaveToDelete}
         onOk={handleDeleteSave}
         onCancel={() => setGameSaveToDelete(null)}

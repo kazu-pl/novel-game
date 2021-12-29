@@ -1,3 +1,23 @@
+# runing `yarn build` fails:
+
+If you got this error:
+
+```
+Error: EPERM: operation not permitted, open 'D:\MY-VISUAL-NOVEL-PROJECT\novel-game\.next\trace'
+Emitted 'error' event on WriteStream instance at:
+    at D:\MY-VISUAL-NOVEL-PROJECT\novel-game\node_modules\next\dist\compiled\@vercel\nft\index.js:1:287421
+    at D:\MY-VISUAL-NOVEL-PROJECT\novel-game\node_modules\next\dist\compiled\@vercel\nft\index.js:1:287860
+    at FSReqCallback.oncomplete (fs.js:179:23) {
+  errno: -4048, // PAY ATTENTION TO THIS ERROR NUMBER
+  code: 'EPERM',
+  syscall: 'open',
+  path: 'D:\\MY-VISUAL-NOVEL-PROJECT\\novel-game\\.next\\trace'
+}
+
+```
+
+Then it means that you have runing server in the background and you try to build it at the same time. Just stop te server and run `yarn build` agian
+
 # How to get rid of warning of not using useLayoutEffect:
 
 If you use `useLayoutEffect` in `Next` on some page and you refresh page on that page you will get warning in console. It goes like this:

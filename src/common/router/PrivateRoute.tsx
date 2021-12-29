@@ -1,4 +1,4 @@
-import { getTokens, isTokenExpired } from "common/auth/tokens";
+import { getTokens, isTokenExpired, removeTokens } from "common/auth/tokens";
 import { PATHS_CORE } from "common/constants/paths";
 import { useRouter } from "next/router";
 import { useLayoutEffect, useState } from "react";
@@ -6,6 +6,7 @@ import { Spin } from "antd";
 import Box from "components/Box";
 import { refreshAccessToken } from "core/store/userSlice";
 import UserProfileWrapper from "common/wrappers/UserProfileWrapper";
+import { logoutQueryKey, logoutQueryValue } from "pages/index";
 
 export interface PrivateRouteProps {
   children?: React.ReactNode;
@@ -22,7 +23,9 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
         await refreshAccessToken();
         setIsCheckingAuth(false);
       } catch (err) {
-        router.push(PATHS_CORE.LOGIN);
+        router.push(
+          `${PATHS_CORE.LOGIN}?${logoutQueryKey}=${logoutQueryValue}`
+        );
       }
     };
 
@@ -49,7 +52,8 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
     isTokenExpired(tokens.refreshToken) &&
     isTokenExpired(tokens.accessToken)
   ) {
-    router.push(PATHS_CORE.LOGIN);
+    removeTokens();
+    router.push(`${PATHS_CORE.LOGIN}?${logoutQueryKey}=${logoutQueryValue}`);
   }
 
   if (isCheckingAuth) {

@@ -327,6 +327,7 @@ const DashboardPage: NextPage = () => {
             title="Usuwanie konta"
             visible={isDeleteAccountModalVisible}
             onOk={handleDeleteAccount}
+            cancelText="Anuluj"
             onCancel={() => setIsDeleteAccountModalVisible(false)}
             okButtonProps={{
               type: "primary",
