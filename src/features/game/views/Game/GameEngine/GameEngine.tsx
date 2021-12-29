@@ -78,92 +78,89 @@ const GameEngine = ({
     }
   }, []);
 
-  const changeGameProgress = useCallback(
-    (e: MouseEvent) => {
-      if (
-        currentDialogIndex + 1 <
-        gameData.scenes[currentSceneIndex].dialogs.length
-      ) {
-        // next dialog from dialogs array
+  const changeGameProgress = useCallback(() => {
+    if (
+      currentDialogIndex + 1 <
+      gameData.scenes[currentSceneIndex].dialogs.length
+    ) {
+      // next dialog from dialogs array
+      if (!isTextRevealed) {
+        // first reveal whole text before changing to next dialog
+        dispatch(setIsTextRevealed(true));
+      } else {
+        // still the same dialog array, just another dialog
+        dispatch(increaseCurrentDialogIndex());
+        dispatch(setIsTextRevealed(false));
+      }
+    } else {
+      if (currentSceneIndex + 1 < gameData.scenes.length) {
+        // next scene
+
         if (!isTextRevealed) {
-          // first reveal whole text before changing to next dialog
           dispatch(setIsTextRevealed(true));
         } else {
-          // still the same dialog array, just another dialog
-          dispatch(increaseCurrentDialogIndex());
+          dispatch(resetCurrentDialogIndex());
+          dispatch(increaseCurrentSceneIndex());
           dispatch(setIsTextRevealed(false));
         }
       } else {
-        if (currentSceneIndex + 1 < gameData.scenes.length) {
-          // next scene
+        // need to change act / end game
+        if (gameData.type !== "end" && gameData.nextAct) {
+          // fetch next act
 
+          if (!isTextRevealed) {
+            // dialog is still revealing so first reveal it
+            dispatch(setIsTextRevealed(true));
+          } else {
+            // and then fetch next act
+            dispatch(fetchAct(gameData.nextAct));
+            dispatch(setIsCachedImgsLoaded(false));
+            dispatch(resetCurrentDialogIndex());
+            dispatch(resetCurrentSceneIndex());
+            setShowActTitleOnEnter(true);
+            dispatch(setIsTextRevealed(false));
+          }
+        } else if (gameData.type !== "end" && !gameData.nextAct) {
+          // there is no next act but game is not ended yet
+          message.info(
+            "Dotarłeś do końca aktualnie dostępnej historii. Oczekuj na dalszą część. Nie zapomnij zapisać stan gry!"
+          );
           if (!isTextRevealed) {
             dispatch(setIsTextRevealed(true));
           } else {
-            dispatch(resetCurrentDialogIndex());
-            dispatch(increaseCurrentSceneIndex());
             dispatch(setIsTextRevealed(false));
           }
+
+          window.removeEventListener("click", changeGameProgress);
         } else {
-          // need to change act / end game
-          if (gameData.type !== "end" && gameData.nextAct) {
-            // fetch next act
+          // // end game here
 
-            if (!isTextRevealed) {
-              // dialog is still revealing so first reveal it
-              dispatch(setIsTextRevealed(true));
-            } else {
-              // and then fetch next act
-              dispatch(fetchAct(gameData.nextAct));
-              dispatch(setIsCachedImgsLoaded(false));
-              dispatch(resetCurrentDialogIndex());
-              dispatch(resetCurrentSceneIndex());
-              setShowActTitleOnEnter(true);
-              dispatch(setIsTextRevealed(false));
-            }
-          } else if (gameData.type !== "end" && !gameData.nextAct) {
-            // there is no next act but game is not ended yet
-            message.info(
-              "Dotarłeś do końca aktualnie dostępnej historii. Oczekuj na dalszą część. Nie zapomnij zapisać stan gry!"
-            );
-            if (!isTextRevealed) {
-              dispatch(setIsTextRevealed(true));
-            } else {
-              dispatch(setIsTextRevealed(false));
-            }
+          // you can't dispatch below actions here because for example currentDialogIndex in array dependency will change and game will get listener one more time. Those actions are dispatched in EndGameScreenWrapper
+          // // dispatch(setIsTextRevealed(false));
+          // // dispatch(resetCurrentDialogIndex());
+          // // dispatch(resetCurrentSceneIndex());
 
-            window.removeEventListener("click", changeGameProgress);
+          if (!isTextRevealed) {
+            // text is still not fully revealed so first reveal it
+            dispatch(setIsTextRevealed(true));
           } else {
-            // // end game here
-
-            // you can't dispatch below actions here because for example currentDialogIndex in array dependency will change and game will get listener one more time. Those actions are dispatched in EndGameScreenWrapper
-            // // dispatch(setIsTextRevealed(false));
-            // // dispatch(resetCurrentDialogIndex());
-            // // dispatch(resetCurrentSceneIndex());
-
-            if (!isTextRevealed) {
-              // text is still not fully revealed so first reveal it
-              dispatch(setIsTextRevealed(true));
-            } else {
-              // and then end game and remove listener
-              setIsGameEnded(true);
-              window.removeEventListener("click", changeGameProgress);
-            }
+            // and then end game and remove listener
+            setIsGameEnded(true);
+            window.removeEventListener("click", changeGameProgress);
           }
         }
       }
-    },
-    [
-      dispatch,
-      currentDialogIndex,
-      currentSceneIndex,
-      gameData.scenes,
-      gameData.nextAct,
-      gameData.type,
-      setShowActTitleOnEnter,
-      isTextRevealed,
-    ]
-  );
+    }
+  }, [
+    dispatch,
+    currentDialogIndex,
+    currentSceneIndex,
+    gameData.scenes,
+    gameData.nextAct,
+    gameData.type,
+    setShowActTitleOnEnter,
+    isTextRevealed,
+  ]);
 
   useEffect(() => {
     if (!isGameEnded && isGameBoardVisible) {

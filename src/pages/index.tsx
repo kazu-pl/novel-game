@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import Button from "antd/lib/button";
-import { notification, Spin } from "antd";
+import { message, notification, Spin } from "antd";
 import CoreView from "layouts/CoreView";
 import { useForm } from "react-hook-form";
 import InputReactHookForm from "components/reactHookForm/InputReactHookForm";
@@ -15,12 +15,15 @@ import { useAppDispatch } from "common/store/hooks";
 import { login } from "core/store/userSlice";
 import { useRouter } from "next/router";
 import { getTokens, isTokenExpired } from "common/auth/tokens";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 const validationSchema = yup.object({
   email: yup.string().email().required(),
   password: yup.string().required(),
 });
+
+export const logoutQueryKey = "reason";
+export const logoutQueryValue = "refreshtokenexpired";
 
 const IndexPage: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -40,6 +43,16 @@ const IndexPage: NextPage = () => {
       setIsCheckingTokens(false);
     }
   }, [setIsCheckingTokens, tokens, router]);
+
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      router.query.hasOwnProperty(logoutQueryKey) &&
+      router.query[logoutQueryKey] === logoutQueryValue
+    ) {
+      message.info("Twoja sesja wygasła. Zaloguj się ponownie.");
+    }
+  }, [router.query]);
 
   const {
     handleSubmit,

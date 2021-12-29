@@ -1,10 +1,11 @@
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { getTokens } from "common/auth/tokens";
 import { API_URL } from "common/constants/env";
-// import history from "common/router/history";
+
 import { PATHS_CORE } from "common/constants/paths";
-// import { refreshAccessToken } from "core/store/userSlice";
-// import { urlLogoutReasonQuery, urlFromQuery } from "core/views/Login";
+import { refreshAccessToken } from "core/store/userSlice";
+
+import { logoutQueryKey, logoutQueryValue } from "pages/index";
 
 interface ExtendedAxiosConfig extends AxiosRequestConfig {
   _retry: boolean;
@@ -41,24 +42,21 @@ axiosSecureInstance.interceptors.response.use(
         }
 
         try {
-          // await refreshAccessToken();
+          await refreshAccessToken();
 
           return axiosSecureInstance({
             ...originalConfig,
-            data: JSON.parse(originalConfig.data), // originalConfig.data is string but you have to pass object type for axios to stringify it and send to server. If you pass jsut originalConfig without JSON.parse() then axios won't send any body (you will be able to see in browser in requests tab that it sends body, but on server you won't see any body)
+            ...(originalConfig.data !== undefined && {
+              data: JSON.parse(originalConfig.data),
+            }),
+            // originalConfig.data is stringified but you have to pass object type for axios to stringify it and send to server. If you pass jsut originalConfig without JSON.parse() then axios won't send any body (you will be able to see in browser in requests tab that it sends body, but on server you won't see any body).
+            // PAY ATTENTION - pass that parsed data object ONLY if it exists becuase not every request contains body and in that base originalConfig.data would be undefined and if you parse undefined then there will be an error and it will be catched by below catch (error) {} block that does window.location.href
           });
         } catch (error) {
           // catch error when obtaining new access token failed
           const axiosError = error as AxiosError;
 
-          const from = window.location.href.slice(
-            window.location.origin.length
-          );
-
-          // const fromWithoutQuery =
-          //   from.indexOf("?") > 0 ? from.slice(0, from.indexOf("?")) : from;
-
-          // window.location.href = `${PATHS_CORE.LOGOUT}?${urlLogoutReasonQuery.key}=${urlLogoutReasonQuery.value}&${urlFromQuery}=${fromWithoutQuery}`;
+          window.location.href = `${PATHS_CORE.LOGIN}?${logoutQueryKey}=${logoutQueryValue}`;
           // history.push(PATHS_CORE.LOGOUT); // TODO: this won't work in react-router 6. You will get pushed to /logout but application won't be pushed to that url. Just url will change. Instead, use  window.location.href which will reload application
 
           // alert("you were logged out due to ended session");
