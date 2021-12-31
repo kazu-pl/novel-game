@@ -10,6 +10,7 @@ import {
   fetchGameSaves,
   selectGameSaves,
   deleteGameSave,
+  setIsTextRevealed,
 } from "features/game/store/gameSlice";
 import GameMenuLayout from "layouts/GameMenuLayout";
 import { ActiveView } from "pages/game";
@@ -59,6 +60,7 @@ const GameLoad = ({ setActiveView, setActIdToLoad }: LoadGameProps) => {
     dispatch(setCurrentSceneIndex(save.sceneIndex));
     dispatch(setCurrentDialogIndex(save.dialogIndex));
     setActiveView("game");
+    dispatch(setIsTextRevealed(false));
   };
 
   const handleDeleteSave = async () => {
