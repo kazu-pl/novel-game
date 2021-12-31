@@ -4,7 +4,7 @@
 const nextConfig = {
   // this register this url as a host that Next can use to serve remote images
   images: {
-    domains: ["novel-server-dev.herokuapp.com"],
+    domains: ["https://novel-server.herokuapp.com"],
   },
 
   // Allows to use SVG as ReactComponent
