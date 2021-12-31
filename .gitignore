@@ -12,8 +12,6 @@
 /.next/
 /out/
 
-# to not include not ready game images
-/public/*.jpg
 
 # production
 /build

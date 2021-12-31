@@ -6,7 +6,7 @@ import "antd/dist/antd.css";
 
 import store from "../common/store/store";
 import theme from "common/styles/theme";
-import { ThemeProvider } from "styled-components";
+import { ThemeProvider, StyleSheetManager } from "styled-components";
 import { notification } from "antd";
 import { CloseCircleOutlined } from "@ant-design/icons";
 import React from "react";
@@ -23,9 +23,11 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <Provider store={store}>
       <CreateGlobalStyle />
-      <ThemeProvider theme={theme}>
-        <Component {...pageProps} />
-      </ThemeProvider>
+      <StyleSheetManager disableVendorPrefixes>
+        <ThemeProvider theme={theme}>
+          <Component {...pageProps} />
+        </ThemeProvider>
+      </StyleSheetManager>
     </Provider>
   );
 }
