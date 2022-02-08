@@ -204,7 +204,7 @@ const GameEngine = ({
   return (
     <StyledGameWrapper>
       <StyledBgImg
-        src={`${API_URL + gameData.scenes[0].bgImg.link}`}
+        src={`${API_URL + gameData.scenes[currentSceneIndex].bgImg.link}`}
         alt="preview background image"
       />
       {gameData?.scenes[currentSceneIndex]?.dialogs[
