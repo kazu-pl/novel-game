@@ -6,6 +6,7 @@ import { PATHS_CORE } from "common/constants/paths";
 import { refreshAccessToken } from "core/store/userSlice";
 
 import { logoutQueryKey, logoutQueryValue } from "pages/index";
+import { FailedReqMsg } from "types/novel-server.types";
 
 interface ExtendedAxiosConfig extends AxiosRequestConfig {
   _retry: boolean;
@@ -20,6 +21,7 @@ axiosSecureInstance.interceptors.request.use((config) => {
 
   config.headers = {
     Authorization: `Bearer ${tokens && tokens.accessToken}`,
+    // "Content-Type": "application/json", // ALTERNATIVE: if you hardcode content-type you don't need to parse body after refreshing accessToken. You also won't need to checking if body is instance of FormData
   };
 
   return config;
@@ -46,9 +48,13 @@ axiosSecureInstance.interceptors.response.use(
 
           return axiosSecureInstance({
             ...originalConfig,
-            ...(originalConfig.data !== undefined && {
-              data: JSON.parse(originalConfig.data),
-            }),
+            ...(originalConfig.data !== undefined &&
+              !(originalConfig.data instanceof FormData) && {
+                // if originalConfig.data is FormData (you send files) you can't pass it as a json file becuase it's not just regular object
+                data: JSON.parse(originalConfig.data),
+              }),
+            // ALTERNATIVE: you can just hardcode the "Content-Type": "application/json" header so you can just return return axiosSecureInstance(originalConfig) without worring about parsing body or not parsing it if instance of FormData
+
             // originalConfig.data is stringified but you have to pass object type for axios to stringify it and send to server. If you pass jsut originalConfig without JSON.parse() then axios won't send any body (you will be able to see in browser in requests tab that it sends body, but on server you won't see any body).
             // PAY ATTENTION - pass that parsed data object ONLY if it exists becuase not every request contains body and in that base originalConfig.data would be undefined and if you parse undefined then there will be an error and it will be catched by below catch (error) {} block that does window.location.href
           });
@@ -61,14 +67,26 @@ axiosSecureInstance.interceptors.response.use(
 
           // alert("you were logged out due to ended session");
           //  to show snackbar you would need to to: history.push(`${PATHS_CORE.LOGOUT}?reason=refresh-token_expired`); and then the same logic in Logout and Login components
-          if (axiosError.response && axiosError.response.data) {
-            return Promise.reject(axiosError.response.data);
+          if (axiosError.response) {
+            if (axiosError.response.data) {
+              return Promise.reject(axiosError.response.data);
+            } else {
+              return Promise.reject({
+                message:
+                  "An error occured but server didn't send any data - on refresh",
+              } as FailedReqMsg);
+            }
           }
-
           return Promise.reject(axiosError);
         }
       } else {
-        return Promise.reject(error.response.data);
+        if (error.response.data) {
+          return Promise.reject(error.response.data);
+        } else {
+          return Promise.reject({
+            message: "An error occured but server didn't send any data",
+          } as FailedReqMsg);
+        }
       }
     }
 
