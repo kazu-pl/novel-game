@@ -79,7 +79,7 @@ const GameLoad = ({ setActiveView, setActIdToLoad }: LoadGameProps) => {
 
       {gameSaves.isLoading && (
         <Box marginBottom={8} marginTop={8}>
-          <StyledParagraph>Loading . . .</StyledParagraph>
+          <StyledParagraph>Ładowanie . . .</StyledParagraph>
         </Box>
       )}
 
@@ -88,7 +88,7 @@ const GameLoad = ({ setActiveView, setActIdToLoad }: LoadGameProps) => {
           <StyledParagraph>Brak zapisów gry</StyledParagraph>
         )}
 
-      <Box maxHeight={500} height="100%" overflowY="auto" marginBottom={8}>
+      <Box maxHeight={320} height="100%" overflowY="auto" marginBottom={8}>
         {gameSaves.data?.map((save) => (
           <StyledSaveWrapper key={save._id}>
             <StyledSaveContentWrapper>

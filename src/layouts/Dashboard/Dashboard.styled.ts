@@ -36,3 +36,10 @@ export const StyledMenuIconWrapper = styled.div`
     display: none;
   }
 `;
+
+export const StyledSubtitleWrapper = styled.span`
+  display: none;
+  @media (min-width: ${({ theme }) => theme.breakpoints.xl}) {
+    display: inline;
+  }
+`;
