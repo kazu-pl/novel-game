@@ -3,6 +3,7 @@ import {
   StyledSidebarWrapper,
   StyledDrawerWrapper,
   StyledMenuIconWrapper,
+  StyledSubtitleWrapper,
 } from "./Dashboard.styled";
 import { PageHeaderProps, Affix, Button } from "antd";
 import Box from "components/Box";
@@ -39,7 +40,7 @@ const DashboardLayout = ({
       <Affix offsetTop={0}>
         <PageHeader
           title={title}
-          subTitle={subTitle}
+          subTitle={<StyledSubtitleWrapper>{subTitle}</StyledSubtitleWrapper>}
           avatar={{
             src: avatarUrl,
           }}

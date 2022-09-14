@@ -3,6 +3,24 @@ import { Typography } from "antd";
 
 const { Text } = Typography;
 
+export const StyledMenuLayoutWrapper = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 2 * 24px);
+  height: calc(100% - 2 * 24px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.xl}) {
+    width: unset;
+    height: unset;
+  }
+`;
+
 export const StyledWrapper = styled.div`
   min-height: 100vh;
   background-color: black;

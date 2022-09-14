@@ -2,6 +2,7 @@ import {
   StyledWrapper,
   StyledBgImg,
   StyledLoadingText,
+  StyledMenuLayoutWrapper,
 } from "./GameMenuLayout.styled";
 import Box from "components/Box";
 import { Spin, Typography } from "antd";
@@ -74,20 +75,21 @@ const GameMenuLayout = ({ children }: GameMenuLayoutProps) => {
   return (
     <StyledWrapper>
       <StyledBgImg src="/gameMenuBg.jpg" alt="alt" />
-      <Box
-        position="absolute"
-        top="50%"
-        left="50%"
-        transform="translate(-50%, -50%)"
-      >
+      <StyledMenuLayoutWrapper>
         <Box
           padding="16px"
           backgroundImage="linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4))"
           boxShadow="0 0 15px 1px black"
           borderRadius={10}
           color="white"
+          textAlign="center"
+          maxHeight={"100%"}
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
         >
           <Title
+            level={2}
             style={{
               color: "white",
               textShadow: "5px 5px 3px black",
@@ -98,7 +100,7 @@ const GameMenuLayout = ({ children }: GameMenuLayoutProps) => {
           </Title>
           {children}
         </Box>
-      </Box>
+      </StyledMenuLayoutWrapper>
     </StyledWrapper>
   );
 };

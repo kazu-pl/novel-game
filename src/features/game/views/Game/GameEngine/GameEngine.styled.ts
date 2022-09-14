@@ -43,6 +43,11 @@ export const StyledActTitle = styled(Title)<{
         ${fadeOut} ${$animationDuration / 3}s ${($animationDuration / 3) * 2}s
           linear forwards;
     `}
+
+  margin: 0 16px;
+  @media (min-width: ${({ theme }) => theme.breakpoints.xl}) {
+    margin: unset;
+  }
 `;
 
 export const StyledGameWrapper = styled.div`
@@ -95,8 +100,13 @@ export const StyledEndGameText = styled(Title)<{
 export const StyledBgImg = styled.img`
   width: 100%;
   object-fit: cover;
-  aspect-ratio: 16/9;
+  height: 100%;
   user-select: none;
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.xl}) {
+    aspect-ratio: 16/9;
+    height: unset;
+  }
 `;
 
 interface StyledCharacterImgProps {
@@ -110,22 +120,39 @@ export const StyledCharacterImg = styled.img<StyledCharacterImgProps>`
   left: ${({ left }) => left}%;
   bottom: 2px;
   z-index: ${({ zIndex }) => zIndex};
+  transform: translateX(-50%);
   object-fit: cover;
-  height: 80%; // # TODO: this will be removed - with  this all characters are the same height
+  height: 60%; // # TODO: this will be removed - with  this all characters are the same height
   width: auto;
+
+  @media (orientation: landscape) {
+    // height 90% but only under width of theme.breakpoints.xl becuase the lower media will override it once it reaches breakpoints.xl with resolution
+    height: 90%;
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.xl}) {
+    height: 80%; // # TODO: this will be removed - with  this all characters are the same height
+    transform: unset;
+  }
 `;
 
 export const StyledDialogTextWrapper = styled.div`
   position: absolute;
-  bottom: 16px;
+  bottom: 8px;
   left: 50%;
   z-index: 100;
   transform: translateX(-50%);
 
   width: 100%;
-  max-width: 1000px;
+  max-width: calc(100vw - 2 * 8px);
   height: 100%;
-  max-height: 200px;
+  max-height: 170px;
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.xl}) {
+    bottom: 16px;
+    max-width: 1000px;
+    max-height: 200px;
+  }
 
   background-color: rgba(0, 0, 0, 0.5);
   filter: blur(0.5px);
@@ -150,7 +177,11 @@ export const StyledCharacterNameWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 20px;
+  font-size: 18px;
+  @media (min-width: ${({ theme }) => theme.breakpoints.xl}) {
+    font-size: 20px;
+  }
+
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0.25) 0%,

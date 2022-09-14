@@ -12,7 +12,11 @@ export const StyledCharacterText = styled(Text)`
   &&& {
     user-select: none;
     color: white;
-    font-size: 18px;
+    font-size: 16px;
+
+    @media (min-width: ${({ theme }) => theme.breakpoints.xl}) {
+      font-size: 18px;
+    }
   }
 `;
 
