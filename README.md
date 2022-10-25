@@ -8,9 +8,7 @@ HOW TO MAKE GLOBAL CONNECTION:
 1 - Create global database connector like this:
 
 ```ts
-// src/lib/dbConnection.ts
-
-// /lib/dbConnect.js
+// src/lib/dbConnect.js
 import { MONGODB_URI } from "common/constants/env";
 import mongoose from "mongoose";
 
@@ -52,12 +50,15 @@ async function dbConnect() {
       w: "majority",
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, options).then((mongoose) => {
-      console.log({
-        mongoose: "connected_to_mongoDB",
+    // here MONGODB_URI can't be undefined because above there's an `if` statement throwing an error if it's undefined
+    cached.promise = mongoose
+      .connect(MONGODB_URI!, options)
+      .then((mongoose) => {
+        console.log({
+          mongoose: "connected_to_mongoDB",
+        });
+        return mongoose;
       });
-      return mongoose;
-    });
   }
   cached.conn = await cached.promise;
   return cached.conn;
@@ -162,6 +163,29 @@ Emitted 'error' event on WriteStream instance at:
 ```
 
 Then it means that you have runing server in the background and you try to build it at the same time. Just stop te server and run `yarn build` agian
+
+# How to catch error in try/catch block when request to API was made by fetch:
+
+When you make a request to API route (or to any server in general) via fetch it will not throw any error even if server DID send you an error response. So if you want to catch the server error in try/catch you need to manually throw that error.
+In the below example `response` is gonna be either the correct response with data or the error response when server sends error status like 404 or 500
+
+```tsx
+export const getCartProducts = async () => {
+  try {
+    const res = await fetch("/api/counter");
+
+    const response = await res.json();
+
+    if (!res.ok) {
+      throw response;
+    }
+
+    // do the actual work when no error
+  } catch (error) {
+    console.log({ error });
+  }
+};
+```
 
 # How to get rid of warning of not using useLayoutEffect:
 
