@@ -26,9 +26,21 @@ const initialState: UserState = {
 
 export const login = createAsyncThunk(
   "login",
-  async (values: RequestLoginCredentials, { rejectWithValue }) => {
+  async (
+    {
+      values,
+      signal,
+    }: {
+      values: RequestLoginCredentials;
+      signal: AbortSignal;
+    },
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await axiosInstance.post<Tokens>("/login", values);
+      const response = await axiosInstance.post<Tokens>("/login", values, {
+        signal,
+      });
+
       saveTokens(response.data);
       return response.data;
     } catch (error) {

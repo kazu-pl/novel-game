@@ -15,7 +15,7 @@ import { useAppDispatch } from "common/store/hooks";
 import { login } from "core/store/userSlice";
 import { useRouter } from "next/router";
 import { getTokens, isTokenExpired } from "common/auth/tokens";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 
 const validationSchema = yup.object({
   email: yup.string().email().required(),
@@ -26,6 +26,9 @@ export const logoutQueryKey = "reason";
 export const logoutQueryValue = "refreshtokenexpired";
 
 const IndexPage: NextPage = () => {
+  const controller = useMemo(() => new AbortController(), []);
+  const signal = controller.signal;
+
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [isCheckingTokens, setIsCheckingTokens] = useState(true);
@@ -65,16 +68,33 @@ const IndexPage: NextPage = () => {
 
   const onSubmit = async (values: RequestLoginCredentials) => {
     try {
-      await dispatch(login(values));
+      await dispatch(login({ values, signal }));
 
       router.push(PATHS_DASHBOARD.DASHBOARD);
     } catch (error) {
-      notification.error({
-        message: null,
-        description: error as string,
-      });
+      if (
+        signal.aborted &&
+        signal.reason &&
+        typeof signal.reason === "string"
+      ) {
+        notification.error({
+          message: null,
+          description: signal.reason,
+        });
+      } else {
+        notification.error({
+          message: null,
+          description: error as string,
+        });
+      }
     }
   };
+
+  useEffect(() => {
+    return function cleanup() {
+      controller.abort("Logowanie zostało przerwane");
+    };
+  }, [controller]);
 
   if (isCheckingTokens) {
     return (
