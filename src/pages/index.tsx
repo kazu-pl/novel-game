@@ -74,11 +74,14 @@ const IndexPage: NextPage = () => {
     } catch (error) {
       if (
         signal.aborted &&
+        // @ts-ignore
         signal.reason &&
+        // @ts-ignore
         typeof signal.reason === "string"
       ) {
         notification.error({
           message: null,
+          // @ts-ignore
           description: signal.reason,
         });
       } else {
@@ -92,6 +95,7 @@ const IndexPage: NextPage = () => {
 
   useEffect(() => {
     return function cleanup() {
+      // @ts-ignore
       controller.abort("Logowanie zostało przerwane");
     };
   }, [controller]);
